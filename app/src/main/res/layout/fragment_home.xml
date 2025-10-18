@@ -37,7 +37,7 @@
         android:layout_height="58dp"
         android:layout_marginStart="60dp"
         android:layout_marginBottom="24dp"
-        android:text="Gamer123"
+        android:text="@string/username_placeholder"
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
@@ -117,5 +117,23 @@
             android:textSize="24sp"
             android:textStyle="bold" />
     </LinearLayout>
+
+    <!-- Logout Button -->
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Logout"
+        android:textSize="21sp"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#009688"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

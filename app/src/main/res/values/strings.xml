@@ -17,4 +17,5 @@
     <string name="home">Home</string>
     <string name="Register">Register</string>
     <string name="video_game_journal">VIDEO GAME JOURNAL</string>
+    <string name="username_placeholder">Username</string>
 </resources>

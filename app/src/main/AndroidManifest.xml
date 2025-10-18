@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.COMP3074">
         <activity
-            android:name=".LoginActivity"
+            android:name="ca.gbc.comp3074.comp3074.ui.LoginActivity"
             android:exported="true"
             android:label="@string/app_name">
             <intent-filter>

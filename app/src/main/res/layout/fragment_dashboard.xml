@@ -5,31 +5,86 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
+    android:background="@color/background"
     tools:context=".ui.dashboard.DashboardFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="@dimen/padding_medium">
 
+        <!-- Title -->
         <TextView
             android:id="@+id/tvFeedTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Friends' Activity Feed"
-            android:textColor="#009688"
+            android:text="🌐 Activity Feed"
+            android:textColor="@color/primary"
             android:textStyle="bold"
-            android:textSize="28sp"
+            android:textSize="@dimen/text_size_display"
             android:gravity="center"
-            android:paddingBottom="16dp" />
+            android:paddingBottom="@dimen/padding_small" />
 
+        <!-- Subtitle -->
         <TextView
-            android:id="@+id/tvFeedContent"
+            android:id="@+id/tvFeedSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Loading feed..."
-            android:textSize="18sp" />
+            android:text="What your friends are playing"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_size_body"
+            android:gravity="center"
+            android:paddingBottom="@dimen/padding_medium" />
+
+        <!-- Follow Suggestions -->
+        <TextView
+            android:id="@+id/tvFollowTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="👥 Suggested Friends"
+            android:textColor="@color/text_primary"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_size_heading"
+            android:paddingBottom="@dimen/padding_small" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_medium"
+            app:cardCornerRadius="@dimen/card_corner_radius"
+            app:cardElevation="@dimen/card_elevation"
+            app:cardBackgroundColor="@color/card_background">
+
+            <LinearLayout
+                android:id="@+id/llFollowSuggestions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/padding_medium">
+                <!-- Follow suggestions will be dynamically added here -->
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Feed Content -->
+        <TextView
+            android:id="@+id/tvRecentActivityTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📰 Recent Activity"
+            android:textColor="@color/text_primary"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_size_heading"
+            android:paddingBottom="@dimen/padding_small" />
+
+        <LinearLayout
+            android:id="@+id/llFeedContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <!-- Feed items will be dynamically added here -->
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

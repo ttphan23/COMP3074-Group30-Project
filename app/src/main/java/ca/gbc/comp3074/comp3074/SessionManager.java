@@ -18,6 +18,7 @@ public class SessionManager {
     private static final String KEY_REVIEWS = "reviews_json";
     private static final String KEY_USERS = "users_json";
     private static final String KEY_REGISTERED_USERS = "registered_users_json";
+    private static final String KEY_REMEMBER_ME = "remember_me";
     private static final String KEY_FOLLOWING = "following_json";
     private static final String KEY_TRENDING_GAMES = "trending_games_json";
 
@@ -78,19 +79,36 @@ public class SessionManager {
 
     // --- User Registration & Authentication ---
     public void registerUser(String username, String password) {
+        // Backwards-compatible: call the extended registration method with empty full name/email
+        registerUser(username, password, "", "");
+    }
+
+    // Extended register method to store additional user metadata
+    public void registerUser(String username, String password, String fullName, String email) {
         try {
             JSONArray registeredUsers = getRegisteredUsersArray();
-            
+
             JSONObject newUser = new JSONObject();
             newUser.put("username", username);
             newUser.put("password", password);
-            
+            newUser.put("fullName", fullName == null ? "" : fullName);
+            newUser.put("email", email == null ? "" : email);
+
             registeredUsers.put(newUser);
-            
+
             prefs.edit().putString(KEY_REGISTERED_USERS, registeredUsers.toString()).apply();
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    // Remember me preference
+    public void setRememberMe(boolean remember) {
+        prefs.edit().putBoolean(KEY_REMEMBER_ME, remember).apply();
+    }
+
+    public boolean isRememberMe() {
+        return prefs.getBoolean(KEY_REMEMBER_ME, false);
     }
 
     public boolean userExists(String username) {

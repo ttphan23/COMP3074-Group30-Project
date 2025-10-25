@@ -15,6 +15,11 @@
     <string name="Register">Register</string>
     <string name="video_game_journal">VIDEO GAME JOURNAL</string>
     <string name="username_placeholder">Username</string>
+    <string name="remember_me">Remember me</string>
+    <string name="full_name">Full name</string>
+    <string name="email">Email</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="date_of_birth">Date of Birth</string>
     
     <!-- New Strings -->
     <string name="trending_games">Trending Games</string>

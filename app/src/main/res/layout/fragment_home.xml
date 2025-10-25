@@ -28,15 +28,15 @@
                 android:layout_height="wrap_content"
                 android:padding="@dimen/padding_medium">
 
-                <!-- Profile Image -->
-                <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="@dimen/profile_image_size"
-                    android:layout_height="@dimen/profile_image_size"
+                <!-- Profile Image/Emoji -->
+                <TextView
+                    android:id="@+id/tvProfileEmoji"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:text="👤"
+                    android:textSize="40sp"
+                    android:gravity="center"
                     android:background="@drawable/profile_background"
-                    android:padding="16dp"
-                    android:src="@drawable/ic_person"
-                    android:contentDescription="Profile Picture"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -50,10 +50,23 @@
                     android:textSize="@dimen/text_size_heading"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
-                    app:layout_constraintBottom_toBottomOf="@id/imageView"
+                    app:layout_constraintBottom_toBottomOf="@id/tvProfileEmoji"
+                    app:layout_constraintEnd_toStartOf="@+id/btnSettings"
+                    app:layout_constraintStart_toEndOf="@id/tvProfileEmoji"
+                    app:layout_constraintTop_toTopOf="@id/tvProfileEmoji" />
+
+                <!-- Settings Button -->
+                <Button
+                    android:id="@+id/btnSettings"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:text="⚙️"
+                    android:textSize="20sp"
+                    android:backgroundTint="@color/primary"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintBottom_toBottomOf="@id/tvProfileEmoji"
                     app:layout_constraintEnd_toStartOf="@+id/btnLogout"
-                    app:layout_constraintStart_toEndOf="@id/imageView"
-                    app:layout_constraintTop_toTopOf="@id/imageView" />
+                    app:layout_constraintTop_toTopOf="@id/tvProfileEmoji" />
 
                 <!-- Logout Button -->
                 <Button
@@ -64,9 +77,9 @@
                     android:textSize="14sp"
                     android:textColor="@android:color/white"
                     android:backgroundTint="@color/button_danger"
-                    app:layout_constraintBottom_toBottomOf="@id/imageView"
+                    app:layout_constraintBottom_toBottomOf="@id/tvProfileEmoji"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/imageView" />
+                    app:layout_constraintTop_toTopOf="@id/tvProfileEmoji" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

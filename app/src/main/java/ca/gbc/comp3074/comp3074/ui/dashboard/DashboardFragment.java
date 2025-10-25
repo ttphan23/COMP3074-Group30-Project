@@ -45,73 +45,148 @@ public class DashboardFragment extends Fragment {
         llFollowSuggestions.removeAllViews();
 
         JSONArray allUsers = sessionManager.getAllUsers();
+        String currentUsername = sessionManager.getUsername();
 
         try {
+            int userCount = 0;
             for (int i = 0; i < allUsers.length(); i++) {
                 JSONObject user = allUsers.getJSONObject(i);
                 String username = user.getString("username");
 
+                // Skip current user
+                if (username.equals(currentUsername)) {
+                    continue;
+                }
+
                 // Create a horizontal layout for each user
                 LinearLayout userLayout = new LinearLayout(requireContext());
                 userLayout.setOrientation(LinearLayout.HORIZONTAL);
-                userLayout.setPadding(0, dpToPx(8), 0, dpToPx(8));
+                userLayout.setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12));
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 userLayout.setLayoutParams(layoutParams);
+                userLayout.setBackgroundColor(getResources().getColor(android.R.color.transparent, null));
 
-                // Username text
-                TextView tvUsername = new TextView(requireContext());
-                tvUsername.setText("👤 " + username);
-                tvUsername.setTextSize(16);
-                tvUsername.setTextColor(getResources().getColor(R.color.text_primary, null));
-                LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(
+                // Avatar circle
+                TextView tvAvatar = new TextView(requireContext());
+                tvAvatar.setText("👤");
+                tvAvatar.setTextSize(24);
+                LinearLayout.LayoutParams avatarParams = new LinearLayout.LayoutParams(
+                        dpToPx(40),
+                        dpToPx(40)
+                );
+                avatarParams.setMargins(0, 0, dpToPx(12), 0);
+                tvAvatar.setLayoutParams(avatarParams);
+                tvAvatar.setGravity(android.view.Gravity.CENTER);
+
+                // Username container
+                LinearLayout usernameContainer = new LinearLayout(requireContext());
+                usernameContainer.setOrientation(LinearLayout.VERTICAL);
+                LinearLayout.LayoutParams containerParams = new LinearLayout.LayoutParams(
                         0,
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         1.0f
                 );
-                tvUsername.setLayoutParams(textParams);
-                tvUsername.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                usernameContainer.setLayoutParams(containerParams);
+                usernameContainer.setGravity(android.view.Gravity.CENTER_VERTICAL);
+
+                // Username text
+                TextView tvUsername = new TextView(requireContext());
+                tvUsername.setText(username);
+                tvUsername.setTextSize(16);
+                tvUsername.setTextColor(getResources().getColor(R.color.text_primary, null));
+                tvUsername.setTypeface(null, android.graphics.Typeface.BOLD);
+
+                // Status text
+                TextView tvStatus = new TextView(requireContext());
+                boolean isFollowing = sessionManager.isFollowing(username);
+                tvStatus.setText(isFollowing ? "Friend" : "Gamer");
+                tvStatus.setTextSize(12);
+                tvStatus.setTextColor(getResources().getColor(R.color.text_secondary, null));
+
+                usernameContainer.addView(tvUsername);
+                usernameContainer.addView(tvStatus);
 
                 // Follow/Unfollow button
                 Button btnFollow = new Button(requireContext());
-                boolean isFollowing = sessionManager.isFollowing(username);
-                btnFollow.setText(isFollowing ? "Unfollow" : "Follow");
-                btnFollow.setTextSize(12);
-                btnFollow.setTextColor(getResources().getColor(R.color.white, null));
+                btnFollow.setText(isFollowing ? "UNFOLLOW" : "FOLLOW");
+                btnFollow.setTextSize(11);
+                btnFollow.setTextColor(getResources().getColor(android.R.color.white, null));
                 btnFollow.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
                         getResources().getColor(isFollowing ? R.color.button_danger : R.color.button_primary, null)
                 ));
                 LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        dpToPx(90),
                         dpToPx(36)
                 );
                 btnFollow.setLayoutParams(btnParams);
-                btnFollow.setPadding(dpToPx(16), 0, dpToPx(16), 0);
+                btnFollow.setAllCaps(true);
 
                 btnFollow.setOnClickListener(v -> {
                     if (sessionManager.isFollowing(username)) {
                         sessionManager.unfollowUser(username);
-                        btnFollow.setText("Follow");
+                        btnFollow.setText("FOLLOW");
                         btnFollow.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
                                 getResources().getColor(R.color.button_primary, null)
                         ));
+                        tvStatus.setText("Gamer");
                         Toast.makeText(requireContext(), "Unfollowed " + username, Toast.LENGTH_SHORT).show();
+                        
+                        // Bounce animation
+                        btnFollow.animate()
+                            .scaleX(0.9f)
+                            .scaleY(0.9f)
+                            .setDuration(100)
+                            .withEndAction(() -> {
+                                btnFollow.animate()
+                                    .scaleX(1f)
+                                    .scaleY(1f)
+                                    .setDuration(100)
+                                    .start();
+                            })
+                            .start();
                     } else {
                         sessionManager.followUser(username);
-                        btnFollow.setText("Unfollow");
+                        btnFollow.setText("UNFOLLOW");
                         btnFollow.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
                                 getResources().getColor(R.color.button_danger, null)
                         ));
-                        Toast.makeText(requireContext(), "Following " + username, Toast.LENGTH_SHORT).show();
+                        tvStatus.setText("Friend");
+                        Toast.makeText(requireContext(), "Now following " + username + "! 🎮", Toast.LENGTH_SHORT).show();
+                        
+                        // Bounce animation
+                        btnFollow.animate()
+                            .scaleX(1.1f)
+                            .scaleY(1.1f)
+                            .setDuration(100)
+                            .withEndAction(() -> {
+                                btnFollow.animate()
+                                    .scaleX(1f)
+                                    .scaleY(1f)
+                                    .setDuration(100)
+                                    .start();
+                            })
+                            .start();
                     }
                     // Reload feed to show new content
                     loadFeedContent();
                 });
 
-                userLayout.addView(tvUsername);
+                userLayout.addView(tvAvatar);
+                userLayout.addView(usernameContainer);
                 userLayout.addView(btnFollow);
+
+                // Fade-in animation
+                userLayout.setAlpha(0f);
+                userLayout.animate()
+                    .alpha(1f)
+                    .setDuration(300)
+                    .setStartDelay(userCount * 50)
+                    .start();
+
+                llFollowSuggestions.addView(userLayout);
 
                 // Add divider except for last item
                 if (i < allUsers.length() - 1) {
@@ -120,16 +195,32 @@ public class DashboardFragment extends Fragment {
                             LinearLayout.LayoutParams.MATCH_PARENT,
                             dpToPx(1)
                     );
-                    dividerParams.setMargins(0, dpToPx(8), 0, 0);
+                    dividerParams.setMargins(dpToPx(12), 0, dpToPx(12), 0);
                     divider.setLayoutParams(dividerParams);
                     divider.setBackgroundColor(getResources().getColor(R.color.divider, null));
-                    userLayout.addView(divider);
+                    llFollowSuggestions.addView(divider);
                 }
 
-                llFollowSuggestions.addView(userLayout);
+                userCount++;
+            }
+
+            // If no users to display
+            if (userCount == 0) {
+                TextView emptyText = new TextView(requireContext());
+                emptyText.setText("No users to follow");
+                emptyText.setTextColor(getResources().getColor(R.color.text_secondary, null));
+                emptyText.setTextSize(14);
+                emptyText.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
+                emptyText.setGravity(android.view.Gravity.CENTER);
+                llFollowSuggestions.addView(emptyText);
             }
         } catch (JSONException e) {
             e.printStackTrace();
+            TextView errorText = new TextView(requireContext());
+            errorText.setText("Error loading users");
+            errorText.setTextColor(getResources().getColor(R.color.text_secondary, null));
+            errorText.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
+            llFollowSuggestions.addView(errorText);
         }
     }
 

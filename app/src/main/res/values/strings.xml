@@ -1,21 +1,28 @@
 <resources>
-    <string name="app_name">COMP3074</string>
+    <string name="app_name">Video Game Journal</string>
     <string name="title_feed">Feed</string>
     <string name="title_home">Game log/Profile Page</string>
     <string name="title_dashboard">Feed</string>
     <string name="title_notifications">Review</string>
-    <string name="title_profile">Profile / Game log</string>
+    <string name="title_profile">Profile</string>
     <string name="title_review">Review</string>
     <string name="login">Login</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="submit">Submit</string>
     <string name="login_home">Login Home</string>
-    <string name="friend_a_started_playing_elden_ring">Friend A started playing Elden Ring</string>
-    <string name="friend_a_started_playing_Stardew_Valley" />
-    <string name="friend_b_started_playing_Stardew_Valley" />
     <string name="home">Home</string>
     <string name="Register">Register</string>
     <string name="video_game_journal">VIDEO GAME JOURNAL</string>
     <string name="username_placeholder">Username</string>
+    
+    <!-- New Strings -->
+    <string name="trending_games">Trending Games</string>
+    <string name="my_library">My Game Library</string>
+    <string name="activity_feed">Activity Feed</string>
+    <string name="suggested_friends">Suggested Friends</string>
+    <string name="recent_activity">Recent Activity</string>
+    <string name="write_review">Write a Review</string>
+    <string name="my_reviews">My Recent Reviews</string>
+    <string name="logout">Logout</string>
 </resources>

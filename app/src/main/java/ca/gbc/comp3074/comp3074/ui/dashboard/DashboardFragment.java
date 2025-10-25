@@ -287,7 +287,8 @@ public class DashboardFragment extends Fragment {
 
                 // Rating
                 TextView tvRating = new TextView(requireContext());
-                tvRating.setText("⭐ " + rating + " / 5.0");
+                String formattedRating = String.format("%.1f",rating);
+                tvRating.setText("⭐ " + formattedRating + " / 5.0");
                 tvRating.setTextSize(14);
                 tvRating.setTextColor(getResources().getColor(R.color.accent, null));
                 tvRating.setTypeface(null, android.graphics.Typeface.BOLD);

@@ -274,7 +274,8 @@ public class HomeFragment extends Fragment {
 
                 // Description and rating
                 TextView tvDetails = new TextView(requireContext());
-                tvDetails.setText(description + " • ⭐ " + rating);
+                String formattedRating = String.format("%.1f",rating);
+                tvDetails.setText(description + " • ⭐ " + formattedRating);
                 tvDetails.setTextSize(14);
                 tvDetails.setTextColor(getResources().getColor(R.color.text_secondary, null));
                 tvDetails.setPadding(0, dpToPx(4), 0, 0);

@@ -6,7 +6,9 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:background="@color/background"
-    tools:context=".ui.notifications.NotificationsFragment">
+    tools:context=".ui.notifications.NotificationsFragment"
+    android:paddingBottom="100dp"
+    android:clipToPadding="false">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -44,7 +46,12 @@
             android:layout_marginBottom="@dimen/margin_medium"
             app:cardCornerRadius="@dimen/card_corner_radius"
             app:cardElevation="@dimen/card_elevation"
-            app:cardBackgroundColor="@color/card_background">
+            app:cardBackgroundColor="@color/card_background"
+            android:clipToPadding="false"
+            android:clipChildren="false"
+            app:cardUseCompatPadding="true"
+            android:paddingBottom="16dp">
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -159,6 +166,7 @@
             app:cardBackgroundColor="@color/card_background">
 
             <LinearLayout
+                android:id="@+id/reviewContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"

@@ -9,13 +9,18 @@ import android.view.animation.BounceInterpolator;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.snackbar.Snackbar;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import ca.gbc.comp3074.comp3074.R;
 import ca.gbc.comp3074.comp3074.SessionManager;
 import ca.gbc.comp3074.comp3074.databinding.FragmentNotificationsBinding;
@@ -80,8 +85,19 @@ public class NotificationsFragment extends Fragment {
                 return;
             }
 
+            boolean success = sessionManager.saveReview(title, text, rating);
+
             // Save review
-            sessionManager.saveReview(title, text, rating);
+            if (!success) {
+                Snackbar.make(root, "⚠️ You already reviewed this game!", Snackbar.LENGTH_LONG)
+                        .setBackgroundTint(getResources().getColor(R.color.accent, null))
+                        .setTextColor(getResources().getColor(R.color.white, null))
+                        .setAction("OK", view -> {})
+                        .show();
+
+                shakeView(etReview);
+                return;
+            }
             
             // Update display
             String allReviews = sessionManager.getAllReviews();
@@ -100,6 +116,8 @@ public class NotificationsFragment extends Fragment {
                         txtSaved.requestFocus();
                     })
                     .show();
+
+            refreshReviewList(root);
 
             // Success animation
             scaleUpView(btnSubmit);
@@ -128,8 +146,146 @@ public class NotificationsFragment extends Fragment {
                 bounceView(bar);
             }
         });
-
+        refreshReviewList(root);
         return root;
+    }
+
+    private void refreshReviewList(View root) {
+        LinearLayout reviewContainer = root.findViewById(R.id.reviewContainer);
+        reviewContainer.removeAllViews();
+
+        try {
+            JSONArray reviews = new JSONArray(sessionManager.getAllReviewsJSON());
+            String currentUser = sessionManager.getUsername();
+
+            if (reviews.length() == 0) {
+                TextView empty = new TextView(requireContext());
+                empty.setText("No previous reviews yet.");
+                empty.setTextColor(getResources().getColor(R.color.text_secondary, null));
+                reviewContainer.addView(empty);
+                return;
+            }
+
+            for (int i = 0; i < reviews.length(); i++) {
+                JSONObject review = reviews.getJSONObject(i);
+                if (!review.getString("user").equals(currentUser)) continue;
+
+                final String title = review.optString("title", "Untitled");
+                final String text = review.optString("text", "(No content)");
+                final float rating = (float) review.optDouble("rating", 0.0);
+
+                LinearLayout reviewBlock = new LinearLayout(requireContext());
+                reviewBlock.setOrientation(LinearLayout.VERTICAL);
+                reviewBlock.setPadding(0, 0, 0, 40);
+                reviewContainer.addView(reviewBlock);
+
+                TextView tv = new TextView(requireContext());
+                tv.setText("🎮 " + title + " — " + rating + "★\n" + text);
+                tv.setTextColor(getResources().getColor(R.color.text_primary, null));
+                reviewBlock.addView(tv);
+
+                LinearLayout btnRow = new LinearLayout(requireContext());
+                btnRow.setOrientation(LinearLayout.HORIZONTAL);
+                reviewBlock.addView(btnRow);
+
+                Button btnEdit = new Button(requireContext());
+                btnEdit.setText("EDIT");
+                btnEdit.setAllCaps(true);
+                btnEdit.setBackgroundTintList(getResources().getColorStateList(R.color.button_secondary, null));
+                btnEdit.setTextColor(getResources().getColor(R.color.white, null));
+                LinearLayout.LayoutParams editParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+                btnEdit.setLayoutParams(editParams);
+                btnRow.addView(btnEdit);
+
+                Button btnDelete = new Button(requireContext());
+                btnDelete.setText("DELETE");
+                btnDelete.setAllCaps(true);
+                btnDelete.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.button_danger));
+                btnDelete.setTextColor(getResources().getColor(R.color.white, null));
+                LinearLayout.LayoutParams delParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+                btnDelete.setLayoutParams(delParams);
+                btnRow.addView(btnDelete);
+
+                LinearLayout editLayout = new LinearLayout(requireContext());
+                editLayout.setOrientation(LinearLayout.VERTICAL);
+                editLayout.setVisibility(View.GONE);
+                editLayout.setPadding(0, 15, 0, 0);
+                reviewBlock.addView(editLayout);
+
+                EditText etEditText = new EditText(requireContext());
+                etEditText.setText(text);
+                etEditText.setHint("Edit your review...");
+                etEditText.setBackgroundResource(R.drawable.edit_text_background);
+                etEditText.setTextColor(getResources().getColor(R.color.text_primary, null));
+                editLayout.addView(etEditText);
+
+                RatingBar editRating = new RatingBar(requireContext(), null, android.R.attr.ratingBarStyleIndicator);
+                editRating.setNumStars(5);
+                editRating.setStepSize(0.5f);
+                editRating.setIsIndicator(false);
+                editRating.setLayoutParams(new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                ));
+                editRating.setScaleX(1.2f);
+                editRating.setScaleY(1.2f);
+                editRating.setPadding(20, 20, 0, 20);
+
+                editLayout.addView(editRating);
+
+                LinearLayout saveCancelRow = new LinearLayout(requireContext());
+                saveCancelRow.setOrientation(LinearLayout.HORIZONTAL);
+                editLayout.addView(saveCancelRow);
+
+                Button btnSave = new Button(requireContext());
+                btnSave.setText("SAVE");
+                btnSave.setBackgroundTintList(getResources().getColorStateList(R.color.button_primary, null));
+                btnSave.setTextColor(getResources().getColor(R.color.white, null));
+                LinearLayout.LayoutParams saveParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+                btnSave.setLayoutParams(saveParams);
+                saveCancelRow.addView(btnSave);
+
+                Button btnCancel = new Button(requireContext());
+                btnCancel.setText("CANCEL");
+                btnCancel.setBackgroundTintList(getResources().getColorStateList(R.color.button_secondary, null));
+                btnCancel.setTextColor(getResources().getColor(R.color.white, null));
+                LinearLayout.LayoutParams cancelParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+                btnCancel.setLayoutParams(cancelParams);
+                saveCancelRow.addView(btnCancel);
+
+                btnEdit.setOnClickListener(v -> {
+                    editLayout.setVisibility(editLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+                    etEditText.requestFocus();
+                });
+
+                btnDelete.setOnClickListener(v -> {
+                    try {
+                        sessionManager.deleteReview(title);
+                        Toast.makeText(requireContext(), "🗑️ Review deleted", Toast.LENGTH_SHORT).show();
+                        refreshReviewList(root);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+                btnSave.setOnClickListener(v -> {
+                    String newText = etEditText.getText().toString().trim();
+                    float newRating = editRating.getRating();
+                    if (newText.isEmpty()) {
+                        Toast.makeText(requireContext(), "⚠️ Review text cannot be empty.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    sessionManager.updateReview(title, newText, newRating);
+                    Toast.makeText(requireContext(), "✅ Review updated!", Toast.LENGTH_SHORT).show();
+                    refreshReviewList(root);
+                    reviewContainer.invalidate();
+                });
+
+                btnCancel.setOnClickListener(v -> editLayout.setVisibility(View.GONE));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     // Animation helpers

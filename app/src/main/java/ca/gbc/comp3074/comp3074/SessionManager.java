@@ -151,10 +151,18 @@ public class SessionManager {
     }
 
     // --- Review-related storage (supports multiple reviews) ---
-    public void saveReview(String gameTitle, String reviewText, float rating) {
+    public boolean saveReview(String gameTitle, String reviewText, float rating) {
         try {
             JSONArray reviews = getAllReviewsArray();
+            String currentUser = getUsername().isEmpty() ? "Guest" : getUsername();
 
+            for(int i = 0; i < reviews.length(); i++){
+                JSONObject review = reviews.getJSONObject(i);
+                if (review.getString("user").equals(currentUser) &&
+                    review.getString("title").equalsIgnoreCase(gameTitle)) {
+                    return false;
+                }
+            }
             JSONObject newReview = new JSONObject();
             newReview.put("title", gameTitle);
             newReview.put("text", reviewText);
@@ -164,9 +172,48 @@ public class SessionManager {
             reviews.put(newReview);
 
             prefs.edit().putString(KEY_REVIEWS, reviews.toString()).apply();
+            return true;
         } catch (JSONException e) {
             e.printStackTrace();
+            return false;
         }
+    }
+
+    public void updateReview(String gameTitle, String newText, float newRating) {
+        try{
+            JSONArray reviews = getAllReviewsArray();
+            String currentUser = getUsername().isEmpty() ? "Guest" : getUsername();
+
+            for (int i = 0; i<reviews.length(); i++){
+                JSONObject review = reviews.getJSONObject(i);
+                if (review.getString("user").equals(currentUser) &&
+                        review.getString("title").equalsIgnoreCase(gameTitle)) {
+
+                    review.put("text", newText);
+                    review.put("rating", newRating);
+                    prefs.edit().putString(KEY_REVIEWS, reviews.toString()).apply();
+                    return;
+                }
+            }
+
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteReview(String title) throws JSONException {
+        JSONArray reviews = getAllReviewsArray();
+        JSONArray updated = new JSONArray();
+        String currentUser = getUsername().isEmpty() ? "Guest" : getUsername();
+
+        for (int i = 0; i < reviews.length(); i++) {
+            JSONObject review = reviews.getJSONObject(i);
+            if (!(review.getString("title").equals(title) && review.getString("user").equals(currentUser))) {
+                updated.put(review);
+            }
+        }
+
+        prefs.edit().putString(KEY_REVIEWS, updated.toString()).apply();
     }
 
     public String getAllReviews() {

@@ -6,7 +6,9 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:background="@color/background"
-    tools:context=".ui.dashboard.DashboardFragment">
+    tools:context=".ui.dashboard.DashboardFragment"
+    android:paddingBottom="100dp"
+    android:clipToPadding="false">
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ca.gbc.comp3074.comp3074.R;
@@ -28,6 +29,12 @@ import ca.gbc.comp3074.comp3074.SessionManager;
 import ca.gbc.comp3074.comp3074.data.ReviewRepository;
 import ca.gbc.comp3074.comp3074.data.local.entities.ReviewEntity;
 import ca.gbc.comp3074.comp3074.databinding.FragmentNotificationsBinding;
+
+import ca.gbc.comp3074.comp3074.data.remote.ApiClient;
+import ca.gbc.comp3074.comp3074.data.remote.models.GameApiModel;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class NotificationsFragment extends Fragment {
 
@@ -51,23 +58,17 @@ public class NotificationsFragment extends Fragment {
         TextView txtSaved = binding.tvLastReview;
         Button btnClear = binding.btnClearReviews;
 
-        // Populate Spinner with dummy game titles
-        String[] games = {
-                "Elden Ring",
-                "The Legend of Zelda: BOTW",
-                "Hollow Knight",
-                "Stardew Valley",
-                "God of War",
-                "Baldur's Gate 3",
-                "The Witcher 3",
-                "Sekiro: Shadows Die Twice"
-        };
+        // Dynamic list for game titles (from API or fallback)
+        List<String> gameTitles = new ArrayList<>();
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_dropdown_item,
-                games
+                gameTitles
         );
         spinnerGames.setAdapter(adapter);
+
+        // Load game options from backend (with local fallback)
+        loadGameOptions(gameTitles, adapter);
 
         // Load existing reviews for current user
         String currentUser = sessionManager.getUsername();
@@ -157,6 +158,59 @@ public class NotificationsFragment extends Fragment {
         refreshReviewList();
 
         return root;
+    }
+
+    private void loadGameOptions(List<String> gameTitles, ArrayAdapter<String> adapter) {
+        // Call the same backend as HomeFragment
+        ApiClient.getGameApiService()
+                .getTrendingGames()
+                .enqueue(new Callback<List<GameApiModel>>() {
+                    @Override
+                    public void onResponse(Call<List<GameApiModel>> call,
+                                           Response<List<GameApiModel>> response) {
+                        if (!isAdded()) return;
+
+                        List<GameApiModel> games = response.body();
+                        gameTitles.clear();
+
+                        if (response.isSuccessful() && games != null && !games.isEmpty()) {
+                            // Use titles from API
+                            for (GameApiModel g : games) {
+                                gameTitles.add(g.getTitle());
+                            }
+                        } else {
+                            // Fallback to local hard-coded list
+                            addFallbackGames(gameTitles);
+                        }
+
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<GameApiModel>> call, Throwable t) {
+                        if (!isAdded()) return;
+                        // Network error → fallback to local list
+                        gameTitles.clear();
+                        addFallbackGames(gameTitles);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+    }
+
+    private void addFallbackGames(List<String> gameTitles) {
+        String[] fallback = {
+                "Elden Ring",
+                "The Legend of Zelda: BOTW",
+                "Hollow Knight",
+                "Stardew Valley",
+                "God of War",
+                "Baldur's Gate 3",
+                "The Witcher 3",
+                "Sekiro: Shadows Die Twice"
+        };
+        for (String g : fallback) {
+            gameTitles.add(g);
+        }
     }
 
     private void refreshReviewList() {

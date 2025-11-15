@@ -24,6 +24,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
+import ca.gbc.comp3074.comp3074.data.remote.ApiClient;
+import ca.gbc.comp3074.comp3074.data.remote.models.GameApiModel;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
 
@@ -248,7 +253,94 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadTrendingGames() {
-        LinearLayout llTrendingGames = binding.getRoot().findViewById(R.id.llTrendingGames);
+        if (binding == null) return;
+
+        final LinearLayout llTrendingGames = binding.getRoot().findViewById(R.id.llTrendingGames);
+        llTrendingGames.removeAllViews();
+
+        // 🔌 Remote call via Retrofit
+        ApiClient.getGameApiService()
+                .getTrendingGames()
+                .enqueue(new Callback<List<GameApiModel>>() {
+                    @Override
+                    public void onResponse(Call<List<GameApiModel>> call, Response<List<GameApiModel>> response) {
+                        if (!isAdded() || binding == null) return;
+
+                        List<GameApiModel> games = response.body();
+                        if (response.isSuccessful() && games != null && !games.isEmpty()) {
+                            populateTrendingFromApi(llTrendingGames, games);
+                        } else {
+                            // Fallback to local dummy data if API gives empty/bad response
+                            populateTrendingFromSessionManager(llTrendingGames);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<GameApiModel>> call, Throwable t) {
+                        if (!isAdded() || binding == null) return;
+                        // Network error → fallback to local dummy data
+                        populateTrendingFromSessionManager(llTrendingGames);
+                    }
+                });
+    }
+    private void populateTrendingFromApi(LinearLayout llTrendingGames, List<GameApiModel> games) {
+        llTrendingGames.removeAllViews();
+
+        int count = Math.min(4, games.size());
+        for (int i = 0; i < count; i++) {
+            GameApiModel game = games.get(i);
+
+            String title = game.getTitle() != null ? game.getTitle() : "Unknown Game";
+            String description = game.getDescription() != null ? game.getDescription() : "";
+            double rating = game.getRating(); // 0.0 if not set
+
+            // Create a card for each game
+            LinearLayout gameCard = new LinearLayout(requireContext());
+            gameCard.setOrientation(LinearLayout.VERTICAL);
+            gameCard.setPadding(0, dpToPx(8), 0, dpToPx(8));
+
+            // Title
+            TextView tvTitle = new TextView(requireContext());
+            tvTitle.setText("🎮 " + title);
+            tvTitle.setTextSize(18);
+            tvTitle.setTextColor(getResources().getColor(R.color.text_primary, null));
+            tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+
+            // Description + rating (if any)
+            TextView tvDetails = new TextView(requireContext());
+            String detailsText;
+            if (rating > 0) {
+                String formattedRating = String.format("%.1f", rating);
+                detailsText = description + " • ⭐ " + formattedRating;
+            } else {
+                detailsText = description;
+            }
+            tvDetails.setText(detailsText);
+            tvDetails.setTextSize(14);
+            tvDetails.setTextColor(getResources().getColor(R.color.text_secondary, null));
+            tvDetails.setPadding(0, dpToPx(4), 0, 0);
+
+            gameCard.addView(tvTitle);
+            gameCard.addView(tvDetails);
+
+            // Divider between items (except last)
+            if (i < count - 1) {
+                View divider = new View(requireContext());
+                LinearLayout.LayoutParams dividerParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        dpToPx(1)
+                );
+                dividerParams.setMargins(0, dpToPx(8), 0, 0);
+                divider.setLayoutParams(dividerParams);
+                divider.setBackgroundColor(getResources().getColor(R.color.divider, null));
+                gameCard.addView(divider);
+            }
+
+            llTrendingGames.addView(gameCard);
+        }
+    }
+
+    private void populateTrendingFromSessionManager(LinearLayout llTrendingGames) {
         llTrendingGames.removeAllViews();
 
         JSONArray trendingGames = sessionManager.getTrendingGames();
@@ -274,7 +366,7 @@ public class HomeFragment extends Fragment {
 
                 // Description and rating
                 TextView tvDetails = new TextView(requireContext());
-                String formattedRating = String.format("%.1f",rating);
+                String formattedRating = String.format("%.1f", rating);
                 tvDetails.setText(description + " • ⭐ " + formattedRating);
                 tvDetails.setTextSize(14);
                 tvDetails.setTextColor(getResources().getColor(R.color.text_secondary, null));
@@ -306,6 +398,7 @@ public class HomeFragment extends Fragment {
             llTrendingGames.addView(errorText);
         }
     }
+
 
     private int dpToPx(int dp) {
         float density = getResources().getDisplayMetrics().density;

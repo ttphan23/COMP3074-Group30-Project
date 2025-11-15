@@ -66,19 +66,55 @@ app.get("/games/trending", async (req, res) => {
     console.error("Error fetching IGDB games:", err.response?.data || err.message);
     // Fallback dummy data so app still works:
     res.json([
-      {
-        id: 1,
-        title: "Elden Ring",
-        description: "Epic open-world action RPG.",
-        rating: 4.9,
-      },
-      {
-        id: 2,
-        title: "Baldur's Gate 3",
-        description: "Deep narrative-driven RPG.",
-        rating: 4.8,
-      },
-    ]);
+  {
+    id: 1,
+    title: "Elden Ring",
+    description: "Epic open-world action RPG.",
+    rating: 4.9,
+  },
+  {
+    id: 2,
+    title: "Baldur's Gate 3",
+    description: "Deep narrative-driven RPG.",
+    rating: 4.8,
+  },
+  {
+    id: 3,
+    title: "Hades",
+    description: "Fast-paced roguelike with amazing combat.",
+    rating: 4.7,
+  },
+  {
+    id: 4,
+    title: "Cyberpunk 2077",
+    description: "Open-world sci-fi RPG — now fully fixed.",
+    rating: 4.6,
+  },
+  {
+    id: 5,
+    title: "The Witcher 3",
+    description: "Legendary story-driven RPG.",
+    rating: 4.9,
+  },
+  {
+    id: 6,
+    title: "Hollow Knight",
+    description: "Metroidvania masterpiece.",
+    rating: 4.8,
+  },
+  {
+    id: 7,
+    title: "Final Fantasy XVI",
+    description: "Cinematic, fast-paced action RPG.",
+    rating: 4.5,
+  },
+  {
+    id: 8,
+    title: "Sekiro: Shadows Die Twice",
+    description: "Brutally satisfying combat challenge.",
+    rating: 4.7,
+  }
+  ]);
   }
 });
 

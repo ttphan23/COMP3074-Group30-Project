@@ -1,90 +1,225 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeRefresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@color/background"
+    android:background="@drawable/bg_deep_space"
+    android:clipToPadding="false"
     tools:context=".ui.dashboard.DashboardFragment">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/padding_medium">
+        android:layout_height="match_parent">
 
-        <!-- Title -->
-        <TextView
-            android:id="@+id/tvFeedTitle"
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="🌐 Activity Feed"
-            android:textColor="@color/primary"
-            android:textStyle="bold"
-            android:textSize="@dimen/text_size_display"
-            android:gravity="center"
-            android:paddingBottom="@dimen/padding_small" />
+            android:layout_height="220dp"
+            android:layout_gravity="top"
+            android:background="@drawable/bg_gradient_arc_top" />
 
-        <!-- Subtitle -->
-        <TextView
-            android:id="@+id/tvFeedSubtitle"
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="What your friends are playing"
-            android:textColor="@color/text_secondary"
-            android:textSize="@dimen/text_size_body"
-            android:gravity="center"
-            android:paddingBottom="@dimen/padding_medium" />
+            android:layout_height="200dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/bg_gradient_arc_bottom" />
 
-        <!-- Follow Suggestions -->
-        <TextView
-            android:id="@+id/tvFollowTitle"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="👥 Suggested Friends"
-            android:textColor="@color/text_primary"
-            android:textStyle="bold"
-            android:textSize="@dimen/text_size_heading"
-            android:paddingBottom="@dimen/padding_small" />
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_medium"
-            app:cardCornerRadius="@dimen/card_corner_radius"
-            app:cardElevation="@dimen/card_elevation"
-            app:cardBackgroundColor="@color/card_background">
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="48dp"
+            android:paddingBottom="24dp">
 
             <LinearLayout
-                android:id="@+id/llFollowSuggestions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/padding_medium">
-                <!-- Follow suggestions will be dynamically added here -->
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvDashboardHeading"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Cosmic Feed"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:gravity="center" />
+
+                <TextView
+                    android:id="@+id/tvFeedSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Live updates from every neon arena"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_secondary"
+                    android:gravity="center"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="20dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="18dp"
+                    android:padding="20dp"
+                    app:cardCornerRadius="26dp"
+                    app:cardBackgroundColor="@color/card_background"
+                    app:strokeColor="@color/neon_cyan"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvFeedTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Live Pulse"
+                            android:textColor="@color/text_primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="8dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="3">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="897"
+                                    android:textColor="@color/neon_cyan"
+                                    android:textSize="22sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Players online"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/text_secondary" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="47"
+                                    android:textColor="@color/neon_purple"
+                                    android:textSize="22sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Live battles"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/text_secondary" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="92%"
+                                    android:textColor="@color/neon_pink"
+                                    android:textSize="22sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Win streak"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/text_secondary" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:id="@+id/tvFollowTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="👥 Follow the brightest"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="10dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="22dp"
+                    app:cardBackgroundColor="@color/card_background"
+                    app:cardCornerRadius="22dp"
+                    app:strokeColor="@color/neon_cyan"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:id="@+id/llFollowSuggestions"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="14dp" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:id="@+id/tvRecentActivityTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="📰 Recent Activity"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="10dp" />
+
+                <LinearLayout
+                    android:id="@+id/llFeedContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:divider="@color/divider"
+                    android:dividerPadding="12dp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="14dp" />
+
             </LinearLayout>
 
-        </androidx.cardview.widget.CardView>
+        </ScrollView>
 
-        <!-- Feed Content -->
-        <TextView
-            android:id="@+id/tvRecentActivityTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="📰 Recent Activity"
-            android:textColor="@color/text_primary"
-            android:textStyle="bold"
-            android:textSize="@dimen/text_size_heading"
-            android:paddingBottom="@dimen/padding_small" />
+    </FrameLayout>
 
-        <LinearLayout
-            android:id="@+id/llFeedContent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <!-- Feed items will be dynamically added here -->
-        </LinearLayout>
-
-    </LinearLayout>
-</ScrollView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

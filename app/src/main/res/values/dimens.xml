@@ -26,6 +26,7 @@
     <dimen name="input_height">56dp</dimen>
     <dimen name="card_elevation">4dp</dimen>
     <dimen name="card_corner_radius">8dp</dimen>
+    <dimen name="card_corner_radius_large">24dp</dimen>
     
     <!-- Icon Sizes -->
     <dimen name="icon_size_small">24dp</dimen>

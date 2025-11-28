@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import ca.gbc.comp3074.comp3074.R;
@@ -22,6 +23,8 @@ import ca.gbc.comp3074.comp3074.model.Game;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.transition.MaterialSharedAxis;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +35,17 @@ public class HomeFragment extends Fragment {
     private List<Game> allGames;
     private String currentFilter = "all"; // "all", "played", "playing", "backlog"
     private SharedPreferences preferences;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        MaterialSharedAxis enter = new MaterialSharedAxis(MaterialSharedAxis.Z, true);
+        enter.setDuration(320);
+        setEnterTransition(enter);
+        MaterialSharedAxis returnAxis = new MaterialSharedAxis(MaterialSharedAxis.Z, false);
+        returnAxis.setDuration(320);
+        setReturnTransition(returnAxis);
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -223,6 +237,11 @@ public class HomeFragment extends Fragment {
                     android.widget.Toast.LENGTH_SHORT).show();
             });
 
+            gameView.setOnLongClickListener(v -> {
+                Toast.makeText(requireContext(), game.getTitle() + " • " + game.getStatus(), Toast.LENGTH_SHORT).show();
+                return true;
+            });
+
             // Fade-in animation
             gameView.setAlpha(0f);
             gameView.animate()
@@ -294,6 +313,13 @@ public class HomeFragment extends Fragment {
                     divider.setBackgroundColor(getResources().getColor(R.color.divider, null));
                     gameCard.addView(divider);
                 }
+
+                String previewText = title + " • " + description + " • ⭐ " + rating;
+                gameCard.setClickable(true);
+                gameCard.setOnLongClickListener(v -> {
+                    Snackbar.make(binding.getRoot(), previewText, Snackbar.LENGTH_SHORT).show();
+                    return true;
+                });
 
                 llTrendingGames.addView(gameCard);
             }

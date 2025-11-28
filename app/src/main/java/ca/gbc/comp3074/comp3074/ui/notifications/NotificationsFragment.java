@@ -19,11 +19,23 @@ import com.google.android.material.snackbar.Snackbar;
 import ca.gbc.comp3074.comp3074.R;
 import ca.gbc.comp3074.comp3074.SessionManager;
 import ca.gbc.comp3074.comp3074.databinding.FragmentNotificationsBinding;
+import com.google.android.material.transition.MaterialSharedAxis;
 
 public class NotificationsFragment extends Fragment {
 
     private FragmentNotificationsBinding binding;
     private SessionManager sessionManager;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        MaterialSharedAxis enter = new MaterialSharedAxis(MaterialSharedAxis.Z, true);
+        enter.setDuration(320);
+        setEnterTransition(enter);
+        MaterialSharedAxis exit = new MaterialSharedAxis(MaterialSharedAxis.Z, false);
+        exit.setDuration(320);
+        setReturnTransition(exit);
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -121,6 +133,13 @@ public class NotificationsFragment extends Fragment {
                     })
                     .show();
         });
+
+                btnSubmit.setOnLongClickListener(v -> {
+                    Snackbar.make(root, "Hold to preview your review before posting", Snackbar.LENGTH_SHORT)
+                        .setAnchorView(btnSubmit)
+                        .show();
+                    return true;
+                });
 
         // Add bounce animation on rating bar change
         ratingBar.setOnRatingBarChangeListener((bar, rating1, fromUser) -> {

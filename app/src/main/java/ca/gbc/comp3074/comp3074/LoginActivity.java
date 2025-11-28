@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,11 +12,11 @@ import androidx.appcompat.app.AppCompatActivity;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etUsername, etPassword;
-    private CheckBox cbRemember;
     private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ThemeHelper.applyTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -35,9 +34,7 @@ public class LoginActivity extends AppCompatActivity {
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
         Button btnLogin = findViewById(R.id.btnLogin);
-        Button btnRegister = findViewById(R.id.btnRegister);
-        cbRemember = findViewById(R.id.cbRemember);
-        TextView tvGuestLogin = findViewById(R.id.tvGuestLogin);
+        TextView tvCreateAccount = findViewById(R.id.tvCreateAccount);
 
         // Login button logic
         btnLogin.setOnClickListener(v -> {
@@ -54,8 +51,7 @@ public class LoginActivity extends AppCompatActivity {
                 // Validate password (for demo, just check it's not empty)
                 if (sessionManager.validateUserPassword(username, password)) {
                     sessionManager.login(username);
-                    // Persist remember preference
-                    sessionManager.setRememberMe(cbRemember != null && cbRemember.isChecked());
+                    sessionManager.setRememberMe(false);
                     Toast.makeText(this, "Welcome back, " + username + "!", Toast.LENGTH_SHORT).show();
                     navigateToMain();
                     finish();
@@ -67,18 +63,10 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        // Open Register screen
-        btnRegister.setOnClickListener(v -> {
-            startActivity(new android.content.Intent(LoginActivity.this, RegisterActivity.class));
-        });
-
-        // Guest login button logic
-        tvGuestLogin.setOnClickListener(v -> {
-            sessionManager.loginAsGuest();
-            Toast.makeText(this, "Continuing as Guest", Toast.LENGTH_SHORT).show();
-            navigateToMain();
-            finish();
-        });
+                // Open Register screen
+                tvCreateAccount.setOnClickListener(v -> {
+                    startActivity(new android.content.Intent(LoginActivity.this, RegisterActivity.class));
+                });
     }
 
     private void navigateToMain() {

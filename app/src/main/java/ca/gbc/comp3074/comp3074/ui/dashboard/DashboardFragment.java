@@ -17,11 +17,23 @@ import ca.gbc.comp3074.comp3074.databinding.FragmentDashboardBinding;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import com.google.android.material.transition.MaterialSharedAxis;
 
 public class DashboardFragment extends Fragment {
 
     private FragmentDashboardBinding binding;
     private SessionManager sessionManager;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        MaterialSharedAxis enter = new MaterialSharedAxis(MaterialSharedAxis.X, true);
+        enter.setDuration(320);
+        setEnterTransition(enter);
+        MaterialSharedAxis exit = new MaterialSharedAxis(MaterialSharedAxis.X, false);
+        exit.setDuration(320);
+        setReturnTransition(exit);
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -30,6 +42,13 @@ public class DashboardFragment extends Fragment {
         View root = binding.getRoot();
 
         sessionManager = new SessionManager(requireContext());
+
+        binding.swipeRefresh.setColorSchemeResources(R.color.accent, R.color.primary);
+        binding.swipeRefresh.setOnRefreshListener(() -> {
+            loadFollowSuggestions();
+            loadFeedContent();
+            binding.swipeRefresh.postDelayed(() -> binding.swipeRefresh.setRefreshing(false), 350);
+        });
 
         // Load follow suggestions
         loadFollowSuggestions();

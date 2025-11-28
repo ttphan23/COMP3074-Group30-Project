@@ -1,192 +1,203 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@color/background"
+    android:background="@drawable/bg_deep_space"
     tools:context=".ui.notifications.NotificationsFragment">
 
-    <LinearLayout
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/padding_medium">
+        android:layout_height="240dp"
+        android:layout_gravity="top"
+        android:background="@drawable/bg_gradient_arc_top" />
 
-        <!-- Title -->
-        <TextView
-            android:id="@+id/tvReviewTitle"
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bg_gradient_arc_bottom" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="48dp"
+        android:paddingBottom="40dp">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="✍️ Write a Review"
-            android:textColor="@color/primary"
-            android:textStyle="bold"
-            android:textSize="@dimen/text_size_display"
-            android:gravity="center"
-            android:paddingBottom="@dimen/padding_small" />
+            android:orientation="vertical">
 
-        <!-- Subtitle -->
-        <TextView
-            android:id="@+id/tvReviewSubtitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Share your gaming experience"
-            android:textColor="@color/text_secondary"
-            android:textSize="@dimen/text_size_body"
-            android:gravity="center"
-            android:paddingBottom="@dimen/padding_large" />
-
-        <!-- Review Form Card -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_medium"
-            app:cardCornerRadius="@dimen/card_corner_radius"
-            app:cardElevation="@dimen/card_elevation"
-            app:cardBackgroundColor="@color/card_background">
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/tvReviewTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/padding_medium">
+                android:text="✍️ Share a Quick Review"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:gravity="center"
+                android:layout_marginBottom="6dp" />
 
-                <!-- Game Selector Label -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Select a Game"
-                    android:textSize="@dimen/text_size_title"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary"
-                    android:layout_marginBottom="@dimen/margin_small"
-                    android:drawableStart="@drawable/ic_game_controller"
-                    android:drawablePadding="@dimen/padding_small" />
-
-                <Spinner
-                    android:id="@+id/spinnerGames"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/input_height"
-                    android:layout_marginBottom="@dimen/margin_medium"
-                    android:background="@drawable/edit_text_background"
-                    android:padding="@dimen/padding_small" />
-
-                <!-- Rating Label -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Your Rating"
-                    android:textSize="@dimen/text_size_title"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary"
-                    android:layout_marginBottom="@dimen/margin_small"
-                    android:drawableStart="@drawable/ic_star"
-                    android:drawablePadding="@dimen/padding_small" />
-
-                <!-- Rating Bar -->
-                <RatingBar
-                    android:id="@+id/ratingbBar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:numStars="5"
-                    android:stepSize="0.5"
-                    android:rating="0"
-                    android:isIndicator="false"
-                    android:progressTint="@color/rating_star"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="@dimen/margin_medium" />
-
-                <!-- Review Text Label -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Your Review"
-                    android:textSize="@dimen/text_size_title"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary"
-                    android:layout_marginBottom="@dimen/margin_small" />
-
-                <!-- Review Input -->
-                <EditText
-                    android:id="@+id/etReview"
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:gravity="top|start"
-                    android:hint="Share your thoughts about this game..."
-                    android:background="@drawable/edit_text_background"
-                    android:padding="@dimen/padding_medium"
-                    android:textSize="@dimen/text_size_body"
-                    android:textColor="@color/text_primary"
-                    android:textColorHint="@color/text_hint"
-                    android:inputType="textMultiLine"
-                    android:maxLines="5"
-                    android:layout_marginBottom="@dimen/margin_medium" />
-
-                <!-- Submit Button -->
-                <Button
-                    android:id="@+id/btnSubmitReview"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/button_height"
-                    android:text="SUBMIT REVIEW"
-                    android:textAllCaps="true"
-                    android:backgroundTint="@color/button_primary"
-                    android:textColor="@android:color/white"
-                    android:textSize="@dimen/text_size_title"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <!-- My Reviews Section -->
-        <TextView
-            android:id="@+id/tvMyReviewsTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="📝 My Recent Reviews"
-            android:textSize="@dimen/text_size_heading"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:layout_marginBottom="@dimen/margin_small" />
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_medium"
-            app:cardCornerRadius="@dimen/card_corner_radius"
-            app:cardElevation="@dimen/card_elevation"
-            app:cardBackgroundColor="@color/card_background">
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/tvReviewSubtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/padding_medium">
+                android:text="Let the neon league feel your voice"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:layout_marginBottom="26dp" />
 
-                <TextView
-                    android:id="@+id/tvLastReview"
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="26dp"
+                android:padding="20dp"
+                app:cardCornerRadius="24dp"
+                app:cardBackgroundColor="@color/card_background"
+                app:strokeColor="@color/neon_purple"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="No previous reviews yet."
-                    android:textSize="@dimen/text_size_body"
-                    android:textColor="@color/text_secondary"
-                    android:paddingBottom="@dimen/padding_medium" />
+                    android:orientation="vertical">
 
-                <!-- Clear Button -->
-                <Button
-                    android:id="@+id/btnClearReviews"
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Select a game"
+                        android:textColor="@color/text_primary"
+                        android:textStyle="bold"
+                        android:textSize="14sp" />
+
+                    <Spinner
+                        android:id="@+id/spinnerGames"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_neon_input"
+                        android:padding="10dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Your Rating"
+                        android:textColor="@color/text_primary"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:layout_marginTop="18dp" />
+
+                    <RatingBar
+                        android:id="@+id/ratingbBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="5"
+                        android:stepSize="0.5"
+                        android:rating="0"
+                        android:isIndicator="false"
+                        android:progressTint="@color/neon_pink"
+                        android:layout_marginTop="8dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Write your thoughts"
+                        android:textColor="@color/text_primary"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:layout_marginTop="18dp" />
+
+                    <EditText
+                        android:id="@+id/etReview"
+                        android:layout_width="match_parent"
+                        android:layout_height="140dp"
+                        android:layout_marginTop="6dp"
+                        android:gravity="top|start"
+                        android:hint="Drop a neon review..."
+                        android:background="@drawable/bg_neon_input"
+                        android:padding="14dp"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_hint"
+                        android:inputType="textMultiLine"
+                        android:maxLines="5" />
+
+                    <Button
+                        android:id="@+id/btnSubmitReview"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="20dp"
+                        android:text="SUBMIT REVIEW"
+                        android:textColor="@color/text_primary"
+                        android:textStyle="bold"
+                        android:background="@drawable/bg_neon_button"
+                        android:textAllCaps="false" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/tvMyReviewsTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="📝 My Recent Reviews"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="10dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                app:cardCornerRadius="24dp"
+                app:cardBackgroundColor="@color/card_background"
+                app:strokeColor="@color/neon_cyan"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/button_height"
-                    android:text="CLEAR ALL REVIEWS"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:backgroundTint="@color/button_danger"
-                    android:textColor="@android:color/white"
-                    android:textAllCaps="true" />
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/tvLastReview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="No previous reviews yet."
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginBottom="18dp" />
 
-        </androidx.cardview.widget.CardView>
+                    <Button
+                        android:id="@+id/btnClearReviews"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:text="CLEAR ALL REVIEWS"
+                        android:textColor="@color/text_primary"
+                        android:textAllCaps="false"
+                        android:backgroundTint="@color/transparent_black"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp" />
 
-    </LinearLayout>
-</ScrollView>
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="40dp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</FrameLayout>

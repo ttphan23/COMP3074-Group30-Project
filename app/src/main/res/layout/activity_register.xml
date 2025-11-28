@@ -1,135 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@color/background">
+    android:background="@drawable/bg_deep_space">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/padding_large">
+        android:layout_height="220dp"
+        android:background="@drawable/bg_gradient_arc_top" />
 
-        <TextView
-            android:id="@+id/tvRegisterTitle"
-            android:layout_width="0dp"
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bg_gradient_arc_bottom" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:padding="24dp"
+        android:paddingTop="110dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Create an account"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/primary"
-            android:textAlignment="center"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
-        <EditText
-            android:id="@+id/etFullName"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/input_height"
-            android:layout_marginTop="@dimen/margin_large"
-            android:hint="@string/full_name"
-            android:inputType="textPersonName"
-            android:background="@drawable/edit_text_background"
-            app:layout_constraintTop_toBottomOf="@id/tvRegisterTitle"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintWidth_max="400dp" />
+            <TextView
+                android:id="@+id/tvRegisterTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create an account"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"
+                android:letterSpacing="0.1" />
 
-        <EditText
-            android:id="@+id/etEmail"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/input_height"
-            android:layout_marginTop="@dimen/margin_small"
-            android:hint="@string/email"
-            android:inputType="textEmailAddress"
-            android:background="@drawable/edit_text_background"
-            app:layout_constraintTop_toBottomOf="@id/etFullName"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintWidth_max="400dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Join the cyber lounge"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp" />
 
-        <EditText
-            android:id="@+id/etRegUsername"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/input_height"
-            android:layout_marginTop="@dimen/margin_small"
-            android:hint="@string/username"
-            android:inputType="textPersonName"
-            android:background="@drawable/edit_text_background"
-            app:layout_constraintTop_toBottomOf="@id/etEmail"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintWidth_max="400dp" />
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                app:cardCornerRadius="32dp"
+                app:cardElevation="12dp"
+                app:strokeColor="@color/neon_blue"
+                app:strokeWidth="2dp"
+                app:cardBackgroundColor="@color/colorSurfaceCard">
 
-        <EditText
-            android:id="@+id/etRegPassword"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/input_height"
-            android:layout_marginTop="@dimen/margin_small"
-            android:hint="@string/password"
-            android:inputType="textPassword"
-            android:background="@drawable/edit_text_background"
-            app:layout_constraintTop_toBottomOf="@id/etRegUsername"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintWidth_max="400dp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
 
-        <EditText
-            android:id="@+id/etConfirmPassword"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/input_height"
-            android:layout_marginTop="@dimen/margin_small"
-            android:hint="@string/confirm_password"
-            android:inputType="textPassword"
-            android:background="@drawable/edit_text_background"
-            app:layout_constraintTop_toBottomOf="@id/etRegPassword"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintWidth_max="400dp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Username"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="14sp" />
 
-        <CheckBox
-            android:id="@+id/cbRegRemember"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small"
-            android:text="@string/remember_me"
-            android:textColor="@color/text_primary"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etConfirmPassword"
-            app:layout_constraintWidth_max="400dp" />
+                    <EditText
+                        android:id="@+id/etRegisterUsername"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="8dp"
+                        android:hint="NeonRider"
+                        android:textColorHint="@color/text_secondary"
+                        android:textColor="?attr/colorOnSurface"
+                        android:padding="12dp"
+                        android:background="@drawable/bg_neon_input" />
 
-        <Button
-            android:id="@+id/btnSubmitRegister"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/button_height"
-            android:layout_marginTop="@dimen/margin_large"
-            android:text="@string/Register"
-            android:textSize="@dimen/text_size_title"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:backgroundTint="@color/button_primary"
-            app:layout_constraintTop_toBottomOf="@id/cbRegRemember"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintWidth_max="400dp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Email"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="14sp" />
 
-        <TextView
-            android:id="@+id/tvBackToLogin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:text="Back to Login"
-            android:textColor="@color/primary"
-            android:textSize="@dimen/text_size_body"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackground"
-            app:layout_constraintTop_toBottomOf="@id/btnSubmitRegister"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+                    <EditText
+                        android:id="@+id/etRegisterEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="8dp"
+                        android:hint="you@example.com"
+                        android:textColorHint="@color/text_secondary"
+                        android:textColor="?attr/colorOnSurface"
+                        android:padding="12dp"
+                        android:background="@drawable/bg_neon_input"
+                        android:inputType="textEmailAddress" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Password"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="14sp" />
 
-</ScrollView>
+                    <EditText
+                        android:id="@+id/etRegisterPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="8dp"
+                        android:hint="Create a password"
+                        android:textColorHint="@color/text_secondary"
+                        android:textColor="?attr/colorOnSurface"
+                        android:padding="12dp"
+                        android:background="@drawable/bg_neon_input"
+                        android:inputType="textPassword" />
+
+                    <Button
+                        android:id="@+id/btnSubmitRegister"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="24dp"
+                        android:text="REGISTER"
+                        android:textAllCaps="true"
+                        android:textColor="@color/colorOnPrimary"
+                        android:background="@drawable/bg_neon_button"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/tvBackToLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Already have an account? Log in"
+                android:textSize="12sp"
+                android:textColor="@color/text_secondary" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</FrameLayout>

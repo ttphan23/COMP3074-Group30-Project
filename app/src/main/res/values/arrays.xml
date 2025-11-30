@@ -1,0 +1,7 @@
+<resources>
+    <string-array name="game_status_options">
+        <item>Played</item>
+        <item>Playing</item>
+        <item>Backlog</item>
+    </string-array>
+</resources>

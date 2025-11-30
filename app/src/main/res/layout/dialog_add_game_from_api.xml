@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- Searchable dropdown of API games -->
+    <AutoCompleteTextView
+        android:id="@+id/actvGameTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Select a game from API"
+        android:inputType="text"
+        android:completionThreshold="1" />
+
+    <!-- Status: Played / Playing / Backlog -->
+    <Spinner
+        android:id="@+id/spinnerStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp" />
+
+</LinearLayout>

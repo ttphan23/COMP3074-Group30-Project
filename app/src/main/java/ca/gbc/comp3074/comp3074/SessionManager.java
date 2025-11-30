@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SessionManager {
-    private static final String PREF_NAME = "vgj_session_prefs";
+    public static final String PREF_NAME = "vgj_session_prefs";
+    public static final String KEY_THEME_MODE = "theme_mode";
     private static final String KEY_IS_LOGGED_IN = "is_logged_in";
     private static final String KEY_USERNAME = "username";
     private static final String KEY_IS_GUEST = "is_guest";

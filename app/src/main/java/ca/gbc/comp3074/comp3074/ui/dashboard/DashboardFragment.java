@@ -13,15 +13,32 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import ca.gbc.comp3074.comp3074.R;
 import ca.gbc.comp3074.comp3074.SessionManager;
+import ca.gbc.comp3074.comp3074.data.AppDatabase;
+import ca.gbc.comp3074.comp3074.data.Review;
+import ca.gbc.comp3074.comp3074.data.ReviewDao;
 import ca.gbc.comp3074.comp3074.databinding.FragmentDashboardBinding;
+import com.google.android.material.transition.MaterialSharedAxis;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import java.util.List;
 
 public class DashboardFragment extends Fragment {
 
     private FragmentDashboardBinding binding;
     private SessionManager sessionManager;
+    private ReviewDao reviewDao;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        MaterialSharedAxis enter = new MaterialSharedAxis(MaterialSharedAxis.X, true);
+        enter.setDuration(320);
+        setEnterTransition(enter);
+        MaterialSharedAxis exit = new MaterialSharedAxis(MaterialSharedAxis.X, false);
+        exit.setDuration(320);
+        setReturnTransition(exit);
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -30,6 +47,14 @@ public class DashboardFragment extends Fragment {
         View root = binding.getRoot();
 
         sessionManager = new SessionManager(requireContext());
+        reviewDao = AppDatabase.getInstance(requireContext()).reviewDao();
+
+        binding.swipeRefresh.setColorSchemeResources(R.color.accent, R.color.primary);
+        binding.swipeRefresh.setOnRefreshListener(() -> {
+            loadFollowSuggestions();
+            loadFeedContent();
+            binding.swipeRefresh.postDelayed(() -> binding.swipeRefresh.setRefreshing(false), 350);
+        });
 
         // Load follow suggestions
         loadFollowSuggestions();
@@ -71,15 +96,18 @@ public class DashboardFragment extends Fragment {
 
                 // Avatar circle
                 TextView tvAvatar = new TextView(requireContext());
-                tvAvatar.setText("👤");
-                tvAvatar.setTextSize(24);
+                tvAvatar.setText(username.substring(0, 1).toUpperCase());
+                tvAvatar.setTextSize(16);
+                tvAvatar.setTextColor(getResources().getColor(R.color.white, null));
+                tvAvatar.setTypeface(null, android.graphics.Typeface.BOLD);
                 LinearLayout.LayoutParams avatarParams = new LinearLayout.LayoutParams(
-                        dpToPx(40),
-                        dpToPx(40)
+                        dpToPx(44),
+                        dpToPx(44)
                 );
                 avatarParams.setMargins(0, 0, dpToPx(12), 0);
                 tvAvatar.setLayoutParams(avatarParams);
                 tvAvatar.setGravity(android.view.Gravity.CENTER);
+                tvAvatar.setBackgroundResource(R.drawable.profile_background);
 
                 // Username container
                 LinearLayout usernameContainer = new LinearLayout(requireContext());
@@ -228,24 +256,13 @@ public class DashboardFragment extends Fragment {
         LinearLayout llFeedContent = binding.getRoot().findViewById(R.id.llFeedContent);
         llFeedContent.removeAllViews();
 
-        // Get reviews from followed users
-        JSONArray followedReviews = sessionManager.getFollowedUsersReviews();
-        
-        // Also get user's own reviews
-        String userReviewsJson = sessionManager.getAllReviewsJSON();
-        try {
-            JSONArray userReviews = new JSONArray(userReviewsJson);
-            // Combine both arrays
-            for (int i = 0; i < userReviews.length(); i++) {
-                followedReviews.put(userReviews.getJSONObject(i));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        // Get reviews from Room DB (ordered by newest first)
+        List<Review> roomReviews = reviewDao.getAllReviews();
 
-        if (followedReviews.length() == 0) {
+        // Check if we have any Room reviews
+        if (roomReviews.isEmpty()) {
             TextView emptyText = new TextView(requireContext());
-            emptyText.setText("No activity yet.\nFollow friends to see their reviews!");
+            emptyText.setText("No recent activity yet.");
             emptyText.setTextColor(getResources().getColor(R.color.text_secondary, null));
             emptyText.setTextSize(16);
             emptyText.setGravity(android.view.Gravity.CENTER);
@@ -254,67 +271,118 @@ public class DashboardFragment extends Fragment {
             return;
         }
 
-        try {
-            for (int i = followedReviews.length() - 1; i >= 0; i--) {
-                JSONObject review = followedReviews.getJSONObject(i);
-                String user = review.optString("user", "Guest");
-                String title = review.optString("title", "Unknown Game");
-                double rating = review.optDouble("rating", 0);
-                String text = review.optString("text", "");
-
-                // Create card for each review
-                CardView card = new CardView(requireContext());
-                LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                cardParams.setMargins(0, 0, 0, dpToPx(12));
-                card.setLayoutParams(cardParams);
-                card.setCardElevation(dpToPx(4));
-                card.setRadius(dpToPx(8));
-                card.setCardBackgroundColor(getResources().getColor(R.color.card_background, null));
-
-                LinearLayout cardContent = new LinearLayout(requireContext());
-                cardContent.setOrientation(LinearLayout.VERTICAL);
-                cardContent.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
-
-                // User and game title
-                TextView tvHeader = new TextView(requireContext());
-                tvHeader.setText("👤 " + user + " reviewed " + title);
-                tvHeader.setTextSize(16);
-                tvHeader.setTextColor(getResources().getColor(R.color.text_primary, null));
-                tvHeader.setTypeface(null, android.graphics.Typeface.BOLD);
-
-                // Rating
-                TextView tvRating = new TextView(requireContext());
-                String formattedRating = String.format("%.1f",rating);
-                tvRating.setText("⭐ " + formattedRating + " / 5.0");
-                tvRating.setTextSize(14);
-                tvRating.setTextColor(getResources().getColor(R.color.accent, null));
-                tvRating.setTypeface(null, android.graphics.Typeface.BOLD);
-                tvRating.setPadding(0, dpToPx(4), 0, dpToPx(4));
-
-                // Review text
-                TextView tvReview = new TextView(requireContext());
-                tvReview.setText("\"" + text + "\"");
-                tvReview.setTextSize(14);
-                tvReview.setTextColor(getResources().getColor(R.color.text_secondary, null));
-                tvReview.setPadding(0, dpToPx(8), 0, 0);
-
-                cardContent.addView(tvHeader);
-                cardContent.addView(tvRating);
-                cardContent.addView(tvReview);
-                card.addView(cardContent);
-
-                llFeedContent.addView(card);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            TextView errorText = new TextView(requireContext());
-            errorText.setText("Error loading feed");
-            errorText.setTextColor(getResources().getColor(R.color.text_secondary, null));
-            llFeedContent.addView(errorText);
+        // Display Room DB reviews (newest first - already sorted by timestamp DESC)
+        for (Review review : roomReviews) {
+            addReviewCard(llFeedContent, review);
         }
+    }
+
+    private void addReviewCard(LinearLayout parent, Review review) {
+        String user = review.getUsername();
+        String title = review.getGameTitle();
+        float rating = review.getRating();
+        String text = review.getReviewText();
+
+        CardView card = new CardView(requireContext());
+        LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        cardParams.setMargins(0, 0, 0, dpToPx(12));
+        card.setLayoutParams(cardParams);
+        card.setCardElevation(0);
+        card.setRadius(dpToPx(16));
+        card.setCardBackgroundColor(getResources().getColor(R.color.card_background, null));
+
+        LinearLayout cardContent = new LinearLayout(requireContext());
+        cardContent.setOrientation(LinearLayout.VERTICAL);
+        cardContent.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
+
+        // Header row with user info
+        LinearLayout headerRow = new LinearLayout(requireContext());
+        headerRow.setOrientation(LinearLayout.HORIZONTAL);
+        headerRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+
+        // Avatar
+        TextView tvAvatar = new TextView(requireContext());
+        tvAvatar.setText(user != null && !user.isEmpty() ? user.substring(0, 1).toUpperCase() : "?");
+        tvAvatar.setTextSize(14);
+        tvAvatar.setTextColor(getResources().getColor(R.color.white, null));
+        tvAvatar.setTypeface(null, android.graphics.Typeface.BOLD);
+        tvAvatar.setGravity(android.view.Gravity.CENTER);
+        tvAvatar.setBackgroundResource(R.drawable.profile_background);
+        LinearLayout.LayoutParams avatarParams = new LinearLayout.LayoutParams(dpToPx(36), dpToPx(36));
+        avatarParams.setMargins(0, 0, dpToPx(12), 0);
+        tvAvatar.setLayoutParams(avatarParams);
+
+        // User info column
+        LinearLayout userInfoColumn = new LinearLayout(requireContext());
+        userInfoColumn.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams userInfoParams = new LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+        userInfoColumn.setLayoutParams(userInfoParams);
+
+        TextView tvUser = new TextView(requireContext());
+        tvUser.setText(user != null ? user : "Unknown");
+        tvUser.setTextSize(14);
+        tvUser.setTextColor(getResources().getColor(R.color.text_primary, null));
+        tvUser.setTypeface(null, android.graphics.Typeface.BOLD);
+
+        TextView tvGame = new TextView(requireContext());
+        tvGame.setText(title);
+        tvGame.setTextSize(12);
+        tvGame.setTextColor(getResources().getColor(R.color.text_secondary, null));
+
+        userInfoColumn.addView(tvUser);
+        userInfoColumn.addView(tvGame);
+
+        // Rating badge
+        TextView tvRating = new TextView(requireContext());
+        tvRating.setText(String.format("%.1f", rating));
+        tvRating.setTextSize(14);
+        tvRating.setTextColor(getResources().getColor(R.color.rating_star, null));
+        tvRating.setTypeface(null, android.graphics.Typeface.BOLD);
+        tvRating.setBackgroundResource(R.drawable.bg_button_secondary);
+        tvRating.setPadding(dpToPx(12), dpToPx(6), dpToPx(12), dpToPx(6));
+
+        headerRow.addView(tvAvatar);
+        headerRow.addView(userInfoColumn);
+        headerRow.addView(tvRating);
+
+        // Review text
+        TextView tvReview = new TextView(requireContext());
+        tvReview.setText(text);
+        tvReview.setTextSize(14);
+        tvReview.setTextColor(getResources().getColor(R.color.text_secondary, null));
+        tvReview.setPadding(0, dpToPx(12), 0, 0);
+        tvReview.setLineSpacing(dpToPx(2), 1.0f);
+
+        // Delete button
+        Button btnDelete = new Button(requireContext());
+        btnDelete.setText("Delete");
+        btnDelete.setTextSize(12);
+        btnDelete.setTextColor(getResources().getColor(R.color.error, null));
+        btnDelete.setBackgroundResource(R.drawable.bg_button_outline);
+        btnDelete.setAllCaps(false);
+        LinearLayout.LayoutParams deleteParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(36));
+        deleteParams.setMargins(0, dpToPx(12), 0, 0);
+        btnDelete.setLayoutParams(deleteParams);
+
+        btnDelete.setOnClickListener(v -> {
+            // Delete from Room DB
+            reviewDao.delete(review);
+            // Refresh the feed
+            loadFeedContent();
+            Toast.makeText(requireContext(), "Review deleted", Toast.LENGTH_SHORT).show();
+        });
+
+        cardContent.addView(headerRow);
+        cardContent.addView(tvReview);
+        cardContent.addView(btnDelete);
+        card.addView(cardContent);
+
+        parent.addView(card);
     }
 
     private int dpToPx(int dp) {

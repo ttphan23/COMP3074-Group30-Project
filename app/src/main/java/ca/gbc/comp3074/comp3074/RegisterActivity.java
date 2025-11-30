@@ -9,11 +9,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import ca.gbc.comp3074.comp3074.data.AppDatabase;
+import ca.gbc.comp3074.comp3074.data.User;
+import ca.gbc.comp3074.comp3074.data.UserDao;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText etEmail, etUsername, etPassword;
     private SessionManager sessionManager;
+    private UserDao userDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +26,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         sessionManager = new SessionManager(this);
+        userDao = AppDatabase.getInstance(this).userDao();
 
         etEmail = findViewById(R.id.etRegisterEmail);
         etUsername = findViewById(R.id.etRegisterUsername);
@@ -54,13 +59,16 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
-            if (sessionManager.userExists(username)) {
+            // Check if user exists in Room DB
+            if (userDao.userExists(username) > 0) {
                 Toast.makeText(this, "Username already exists. Choose another.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Register with extra fields
-            sessionManager.registerUser(username, password);
+            // Register user in Room DB
+            User newUser = new User(username, password, "", email);
+            userDao.insert(newUser);
+
             sessionManager.setRememberMe(false);
             sessionManager.login(username);
 

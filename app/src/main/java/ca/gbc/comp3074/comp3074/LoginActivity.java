@@ -8,11 +8,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import ca.gbc.comp3074.comp3074.data.AppDatabase;
+import ca.gbc.comp3074.comp3074.data.User;
+import ca.gbc.comp3074.comp3074.data.UserDao;
 
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etUsername, etPassword;
     private SessionManager sessionManager;
+    private UserDao userDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,8 +24,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Initialize SessionManager
+        // Initialize SessionManager and UserDao
         sessionManager = new SessionManager(this);
+        userDao = AppDatabase.getInstance(this).userDao();
 
         // Skip login if already logged in AND user chose "Remember me"
         if (sessionManager.isLoggedIn() && sessionManager.isRememberMe()) {
@@ -46,10 +51,15 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            // Check if user exists
-            if (sessionManager.userExists(username)) {
-                // Validate password (for demo, just check it's not empty)
-                if (sessionManager.validateUserPassword(username, password)) {
+            // Get fresh instance of userDao
+            UserDao freshUserDao = AppDatabase.getInstance(this).userDao();
+
+            // Try to get user directly
+            User user = freshUserDao.getUserByUsername(username);
+
+            if (user != null) {
+                // User exists, check password
+                if (user.getPassword().equals(password)) {
                     sessionManager.login(username);
                     sessionManager.setRememberMe(false);
                     Toast.makeText(this, "Welcome back, " + username + "!", Toast.LENGTH_SHORT).show();
@@ -63,10 +73,10 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-                // Open Register screen
-                tvCreateAccount.setOnClickListener(v -> {
-                    startActivity(new android.content.Intent(LoginActivity.this, RegisterActivity.class));
-                });
+        // Open Register screen
+        tvCreateAccount.setOnClickListener(v -> {
+            startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+        });
     }
 
     private void navigateToMain() {

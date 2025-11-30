@@ -9,7 +9,12 @@
         <item name="colorBackground">@color/colorBackground</item>
         <item name="colorSurface">@color/colorSurface</item>
         <item name="colorOnSurface">@color/colorOnSurface</item>
-        <item name="android:statusBarColor">@color/arc_gradient_bottom</item>
-        <item name="android:navigationBarColor">@color/deep_space_dark</item>
+        <item name="android:statusBarColor">@color/deep_space</item>
+        <item name="android:navigationBarColor">@color/background_secondary</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <style name="BottomNavIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/colorSurfaceStrong</item>
     </style>
 </resources>

@@ -69,10 +69,13 @@ public class HomeFragment extends Fragment {
             usernameText.setText("Guest");
         }
         
-        // Load and display profile emoji
+        // Load and display profile initial
         TextView tvProfileEmoji = root.findViewById(R.id.tvProfileEmoji);
-        String profileEmoji = preferences.getString("profileEmoji", "👤");
-        tvProfileEmoji.setText(profileEmoji);
+        if (username != null && !username.isEmpty() && !username.equals("Guest")) {
+            tvProfileEmoji.setText(username.substring(0, 1).toUpperCase());
+        } else {
+            tvProfileEmoji.setText("G");
+        }
 
         // Initialize game library
         initializeGames();
@@ -201,10 +204,10 @@ public class HomeFragment extends Fragment {
 
         // Update library title with count
         TextView libraryTitle = binding.getRoot().findViewById(R.id.tvLibraryTitle);
-        String filterText = currentFilter.equals("all") ? "My Game Library" : 
-                           currentFilter.equals("played") ? "Completed Games" :
-                           currentFilter.equals("playing") ? "Currently Playing" : "My Backlog";
-        libraryTitle.setText("📚 " + filterText + " (" + filteredGames.size() + ")");
+        String filterText = currentFilter.equals("all") ? "Game Library" :
+                           currentFilter.equals("played") ? "Completed" :
+                           currentFilter.equals("playing") ? "Currently Playing" : "Backlog";
+        libraryTitle.setText(filterText + " (" + filteredGames.size() + ")");
 
         if (filteredGames.isEmpty()) {
             TextView emptyText = new TextView(requireContext());
@@ -279,27 +282,46 @@ public class HomeFragment extends Fragment {
                 String description = game.getString("description");
                 double rating = game.getDouble("rating");
 
-                // Create a card for each game
-                LinearLayout gameCard = new LinearLayout(requireContext());
-                gameCard.setOrientation(LinearLayout.VERTICAL);
-                gameCard.setPadding(0, dpToPx(8), 0, dpToPx(8));
+                // Create a row for each game
+                LinearLayout gameRow = new LinearLayout(requireContext());
+                gameRow.setOrientation(LinearLayout.HORIZONTAL);
+                gameRow.setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12));
+                gameRow.setGravity(Gravity.CENTER_VERTICAL);
+
+                // Game info column
+                LinearLayout infoColumn = new LinearLayout(requireContext());
+                infoColumn.setOrientation(LinearLayout.VERTICAL);
+                LinearLayout.LayoutParams infoParams = new LinearLayout.LayoutParams(
+                        0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                infoColumn.setLayoutParams(infoParams);
 
                 // Title
                 TextView tvTitle = new TextView(requireContext());
-                tvTitle.setText("🎮 " + title);
-                tvTitle.setTextSize(18);
+                tvTitle.setText(title);
+                tvTitle.setTextSize(15);
                 tvTitle.setTextColor(getResources().getColor(R.color.text_primary, null));
                 tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
 
-                // Description and rating
+                // Description
                 TextView tvDetails = new TextView(requireContext());
-                tvDetails.setText(description + " • ⭐ " + rating);
-                tvDetails.setTextSize(14);
+                tvDetails.setText(description);
+                tvDetails.setTextSize(13);
                 tvDetails.setTextColor(getResources().getColor(R.color.text_secondary, null));
-                tvDetails.setPadding(0, dpToPx(4), 0, 0);
 
-                gameCard.addView(tvTitle);
-                gameCard.addView(tvDetails);
+                infoColumn.addView(tvTitle);
+                infoColumn.addView(tvDetails);
+
+                // Rating badge
+                TextView tvRating = new TextView(requireContext());
+                tvRating.setText(String.format("%.1f", rating));
+                tvRating.setTextSize(14);
+                tvRating.setTextColor(getResources().getColor(R.color.rating_star, null));
+                tvRating.setTypeface(null, android.graphics.Typeface.BOLD);
+
+                gameRow.addView(infoColumn);
+                gameRow.addView(tvRating);
+
+                llTrendingGames.addView(gameRow);
 
                 // Add divider except for last item
                 if (i < Math.min(4, trendingGames.length()) - 1) {
@@ -308,26 +330,18 @@ public class HomeFragment extends Fragment {
                             LinearLayout.LayoutParams.MATCH_PARENT,
                             dpToPx(1)
                     );
-                    dividerParams.setMargins(0, dpToPx(8), 0, 0);
+                    dividerParams.setMargins(dpToPx(12), 0, dpToPx(12), 0);
                     divider.setLayoutParams(dividerParams);
                     divider.setBackgroundColor(getResources().getColor(R.color.divider, null));
-                    gameCard.addView(divider);
+                    llTrendingGames.addView(divider);
                 }
-
-                String previewText = title + " • " + description + " • ⭐ " + rating;
-                gameCard.setClickable(true);
-                gameCard.setOnLongClickListener(v -> {
-                    Snackbar.make(binding.getRoot(), previewText, Snackbar.LENGTH_SHORT).show();
-                    return true;
-                });
-
-                llTrendingGames.addView(gameCard);
             }
         } catch (JSONException e) {
             e.printStackTrace();
             TextView errorText = new TextView(requireContext());
             errorText.setText("Unable to load trending games");
             errorText.setTextColor(getResources().getColor(R.color.text_secondary, null));
+            errorText.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
             llTrendingGames.addView(errorText);
         }
     }
@@ -340,11 +354,15 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Refresh profile emoji when returning from settings
-        if (binding != null && preferences != null) {
+        // Refresh profile when returning from settings
+        if (binding != null) {
+            String username = sessionManager.getUsername();
             TextView tvProfileEmoji = binding.getRoot().findViewById(R.id.tvProfileEmoji);
-            String profileEmoji = preferences.getString("profileEmoji", "👤");
-            tvProfileEmoji.setText(profileEmoji);
+            if (username != null && !username.isEmpty() && !username.equals("Guest")) {
+                tvProfileEmoji.setText(username.substring(0, 1).toUpperCase());
+            } else {
+                tvProfileEmoji.setText("G");
+            }
         }
     }
 

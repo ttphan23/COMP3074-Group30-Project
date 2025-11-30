@@ -3,6 +3,7 @@ package ca.gbc.comp3074.comp3074;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
@@ -14,6 +15,7 @@ public class SettingsActivity extends AppCompatActivity {
     private Button btnChangePassword;
     private Button btnPrivacy;
     private Button btnLogout;
+    private ImageButton btnBack;
     private SessionManager sessionManager;
 
     @Override
@@ -23,6 +25,10 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         sessionManager = new SessionManager(this);
+
+        // Back button
+        btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> finish());
         switchDarkMode = findViewById(R.id.switchDarkMode);
         switchPush = findViewById(R.id.switchPush);
         btnChangePassword = findViewById(R.id.btnChangePassword);
@@ -50,4 +56,5 @@ public class SettingsActivity extends AppCompatActivity {
             finish();
         });
     }
+
 }

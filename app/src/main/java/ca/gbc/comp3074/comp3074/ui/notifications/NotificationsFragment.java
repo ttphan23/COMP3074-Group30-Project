@@ -18,13 +18,18 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.snackbar.Snackbar;
 import ca.gbc.comp3074.comp3074.R;
 import ca.gbc.comp3074.comp3074.SessionManager;
+import ca.gbc.comp3074.comp3074.data.AppDatabase;
+import ca.gbc.comp3074.comp3074.data.Review;
+import ca.gbc.comp3074.comp3074.data.ReviewDao;
 import ca.gbc.comp3074.comp3074.databinding.FragmentNotificationsBinding;
 import com.google.android.material.transition.MaterialSharedAxis;
+import java.util.List;
 
 public class NotificationsFragment extends Fragment {
 
     private FragmentNotificationsBinding binding;
     private SessionManager sessionManager;
+    private ReviewDao reviewDao;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,6 +49,7 @@ public class NotificationsFragment extends Fragment {
         View root = binding.getRoot();
 
         sessionManager = new SessionManager(requireContext());
+        reviewDao = AppDatabase.getInstance(requireContext()).reviewDao();
 
         Spinner spinnerGames = root.findViewById(R.id.spinnerGames);
         EditText etReview = root.findViewById(R.id.etReview);
@@ -54,16 +60,12 @@ public class NotificationsFragment extends Fragment {
 
         // Populate Spinner with dummy game titles
         String[] games = {"Elden Ring", "The Legend of Zelda: BOTW", "Hollow Knight", "Stardew Valley", "God of War", "Baldur's Gate 3", "The Witcher 3", "Sekiro: Shadows Die Twice"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, games);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), R.layout.spinner_item, games);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinnerGames.setAdapter(adapter);
 
-        // Restore previous review
-        String last = sessionManager.getAllReviews();
-        if (last != null && !last.equals("No reviews yet.")) {
-            txtSaved.setText(last);
-        } else {
-            txtSaved.setText("No previous reviews yet.");
-        }
+        // Restore previous reviews from Room DB
+        updateReviewsDisplay(txtSaved);
 
         // Submit review with animations and feedback
         btnSubmit.setOnClickListener(v -> {
@@ -92,12 +94,13 @@ public class NotificationsFragment extends Fragment {
                 return;
             }
 
-            // Save review
-            sessionManager.saveReview(title, text, rating);
-            
+            // Save review to Room DB
+            String username = sessionManager.getUsername();
+            Review review = new Review(title, text, rating, username);
+            reviewDao.insert(review);
+
             // Update display
-            String allReviews = sessionManager.getAllReviews();
-            txtSaved.setText(allReviews);
+            updateReviewsDisplay(txtSaved);
             
             // Clear inputs
             etReview.setText("");
@@ -126,7 +129,8 @@ public class NotificationsFragment extends Fragment {
                     .setBackgroundTint(getResources().getColor(R.color.button_danger, null))
                     .setTextColor(getResources().getColor(R.color.white, null))
                     .setAction("DELETE", view -> {
-                        sessionManager.clearReviews();
+                        String username = sessionManager.getUsername();
+                        reviewDao.deleteReviewsForUser(username);
                         txtSaved.setText("No previous reviews yet.");
                         Toast.makeText(requireContext(), "All reviews cleared", Toast.LENGTH_SHORT).show();
                         fadeInView(txtSaved);
@@ -149,6 +153,28 @@ public class NotificationsFragment extends Fragment {
         });
 
         return root;
+    }
+
+    private void updateReviewsDisplay(TextView txtSaved) {
+        String username = sessionManager.getUsername();
+        List<Review> reviews = reviewDao.getReviewsForUser(username);
+
+        if (reviews.isEmpty()) {
+            txtSaved.setText("No previous reviews yet.");
+            return;
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for (Review review : reviews) {
+            builder.append("🎮 ")
+                    .append(review.getGameTitle())
+                    .append(" — ")
+                    .append(review.getRating())
+                    .append("★\n")
+                    .append(review.getReviewText())
+                    .append("\n\n");
+        }
+        txtSaved.setText(builder.toString().trim());
     }
 
     // Animation helpers

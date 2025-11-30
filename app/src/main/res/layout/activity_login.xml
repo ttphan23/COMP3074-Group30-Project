@@ -67,7 +67,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Email"
+                        android:text="Username"
                         android:textColor="?attr/colorOnSurface"
                         android:textSize="14sp" />
 
@@ -76,12 +76,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:layout_marginTop="8dp"
-                        android:hint="Enter your email"
+                        android:hint="Enter your username"
                         android:textColorHint="@color/text_secondary"
                         android:textColor="?attr/colorOnSurface"
                         android:padding="12dp"
                         android:background="@drawable/bg_neon_input"
-                        android:inputType="textEmailAddress"
+                        android:inputType="text"
                         android:drawableTint="@color/neon_cyan"
                         android:textCursorDrawable="@null" />
 

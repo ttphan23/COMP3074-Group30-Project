@@ -27,6 +27,11 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.transition.MaterialSharedAxis;
 import java.util.ArrayList;
 import java.util.List;
+import android.app.AlertDialog;
+
+import android.widget.EditText;
+
+import android.widget.Spinner;
 
 public class HomeFragment extends Fragment {
 
@@ -68,6 +73,20 @@ public class HomeFragment extends Fragment {
         } else {
             usernameText.setText("Guest");
         }
+
+        Button btnEditLibrary = binding.getRoot().findViewById(R.id.btnEditLibrary);
+
+        btnEditLibrary.setOnClickListener(v -> {
+            showAddGameDialog();
+        });
+
+        TextView tvBestGame = root.findViewById(R.id.tvBestGame);
+        String best = sessionManager.getBestGame();
+        if (best != null && !best.isEmpty()) {
+            tvBestGame.setText("⭐ Best Game: " + best);
+        } else {
+            tvBestGame.setText("⭐ Best Game: None");
+        }
         
         // Load and display profile initial
         TextView tvProfileEmoji = root.findViewById(R.id.tvProfileEmoji);
@@ -78,7 +97,14 @@ public class HomeFragment extends Fragment {
         }
 
         // Initialize game library
-        initializeGames();
+        List<Game> savedGames = sessionManager.getGameLibrary();
+
+        if (savedGames.isEmpty()) {
+            initializeGames();              // 기본 목록 생성
+            sessionManager.saveGameLibrary(allGames);
+        } else {
+            allGames = savedGames;
+        }
 
         // Setup filter buttons
         setupFilterButtons();
@@ -107,22 +133,16 @@ public class HomeFragment extends Fragment {
     }
 
     private void initializeGames() {
+
+        List<Game> saved = sessionManager.getGameLibrary();
+        if (saved != null && !saved.isEmpty()) {
+            allGames = saved;
+            return;
+        }
+
         allGames = new ArrayList<>();
-        // Played games
-        allGames.add(new Game("The Legend of Zelda: BOTW", "played", "🎮"));
-        allGames.add(new Game("The Witcher 3", "played", "⚔️"));
-        allGames.add(new Game("God of War", "played", "🪓"));
-        
-        // Currently playing
-        allGames.add(new Game("Elden Ring", "playing", "🎮"));
-        allGames.add(new Game("Cyberpunk 2077", "playing", "🤖"));
-        allGames.add(new Game("Red Dead Redemption 2", "playing", "🤠"));
-        
-        // Backlog
-        allGames.add(new Game("Hollow Knight", "backlog", "🦋"));
-        allGames.add(new Game("Sekiro", "backlog", "⚔️"));
-        allGames.add(new Game("Final Fantasy XVI", "backlog", "🐉"));
-        allGames.add(new Game("Baldur's Gate 3", "backlog", "🎲"));
+
+        sessionManager.saveGameLibrary(allGames);
     }
 
     private void setupFilterButtons() {
@@ -189,6 +209,122 @@ public class HomeFragment extends Fragment {
         }
     }
 
+
+    private void showAddGameDialog() {
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_game, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Add Game");
+        builder.setView(dialogView);
+
+        builder.setPositiveButton("Add", (dialog, which) -> {
+            EditText editTitle = dialogView.findViewById(R.id.editTitle);
+            Spinner spinnerStatus = dialogView.findViewById(R.id.spinnerStatus);
+            Spinner spinnerEmoji = dialogView.findViewById(R.id.spinnerEmoji);
+
+            String title = editTitle.getText().toString();
+            String status = spinnerStatus.getSelectedItem().toString().toLowerCase(); // Played → "played"
+            String emoji = spinnerEmoji.getSelectedItem().toString();
+
+
+            Game newGame = new Game(title, status, emoji);
+            allGames.add(newGame);
+            sessionManager.saveGameLibrary(allGames);
+            loadGameLibrary();
+        });
+
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+    private void setupLongClick(TextView gameView, Game game) {
+
+        gameView.setOnLongClickListener(v -> {
+
+            String[] options = {"Edit", "Delete", "Set as Best Game"};
+
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Choose Action")
+                    .setItems(options, (dialog, which) -> {
+                        if (which == 0) {
+                            showEditDialog(game);
+                        } else if (which == 1) {
+                            confirmDeleteGame(game);
+                        } else if (which == 2) {
+                            setBestGame(game);
+                        }
+                    })
+                    .show();
+
+            return true;
+        });
+    }
+
+    private void setBestGame(Game game) {
+        sessionManager.setBestGame(game.getTitle());
+
+        TextView tvBestGame = binding.getRoot().findViewById(R.id.tvBestGame);
+        tvBestGame.setText("⭐ Best Game: " + game.getTitle());
+
+        android.widget.Toast.makeText(requireContext(),
+                game.getTitle() + " set as your Best Game!",
+                android.widget.Toast.LENGTH_SHORT).show();
+    }
+
+
+    private void showEditDialog(Game selectedGame) {
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_game, null);
+
+        EditText titleInput = dialogView.findViewById(R.id.editTitle);
+        Spinner statusSpinner = dialogView.findViewById(R.id.spinnerStatus);
+        Spinner emojiSpinner = dialogView.findViewById(R.id.spinnerEmoji);
+
+        titleInput.setText(selectedGame.getTitle());
+
+        String[] statuses = getResources().getStringArray(R.array.status_options);
+        for (int i = 0; i < statuses.length; i++) {
+            if (statuses[i].equalsIgnoreCase(selectedGame.getStatus())) {
+                statusSpinner.setSelection(i);
+                break;
+            }
+        }
+
+        String[] emojis = getResources().getStringArray(R.array.emoji_options);
+        for (int i = 0; i < emojis.length; i++) {
+            if (emojis[i].equals(selectedGame.getEmoji())) {
+                emojiSpinner.setSelection(i);
+                break;
+            }
+        }
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Edit Game")
+                .setView(dialogView)
+                .setPositiveButton("Save", (dialog, which) -> {
+                    selectedGame.setTitle(titleInput.getText().toString());
+                    selectedGame.setStatus(statusSpinner.getSelectedItem().toString().toLowerCase());
+                    selectedGame.setEmoji(emojiSpinner.getSelectedItem().toString());
+
+                    sessionManager.saveGameLibrary(allGames);
+                    loadGameLibrary();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+
+    private void confirmDeleteGame(Game game) {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Delete Game")
+                .setMessage("Are you sure you want to delete '" + game.getTitle() + "'?")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    allGames.remove(game);
+                    sessionManager.saveGameLibrary(allGames);
+                    loadGameLibrary();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
     private void loadGameLibrary() {
         LinearLayout libraryContainer = binding.getRoot().findViewById(R.id.linearLayout2);
         libraryContainer.removeAllViews();
@@ -244,6 +380,8 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(requireContext(), game.getTitle() + " • " + game.getStatus(), Toast.LENGTH_SHORT).show();
                 return true;
             });
+
+            setupLongClick(gameView, game);
 
             // Fade-in animation
             gameView.setAlpha(0f);

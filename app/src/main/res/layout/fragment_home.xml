@@ -90,6 +90,18 @@
                             android:textSize="14sp"
                             android:textColor="@color/neon_purple"
                             android:layout_marginTop="2dp" />
+
+                        <TextView
+                            android:id="@+id/tvBestGame"
+                            android:layout_width="350dp"
+                            android:layout_height="20dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="1dp"
+                            android:text="⭐ Best Game: None"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/btnSettings" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -327,6 +339,21 @@
             android:textColor="@color/text_primary"
             android:layout_marginBottom="12dp" />
 
+
+        <Button
+            android:id="@+id/btnEditLibrary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit Library"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center_horizontal"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerLibrary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false" />
+
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -339,7 +366,52 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="4dp" />
+                android:padding="@dimen/padding_medium">
+
+                <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/padding_medium"
+                    android:text="🎮 The Legend of Zelda: BOTW"
+                    android:textSize="@dimen/text_size_title"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:background="?attr/selectableItemBackground" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/divider" />
+
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/padding_medium"
+                    android:text="🎮 Elden Ring"
+                    android:textSize="@dimen/text_size_title"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:background="?attr/selectableItemBackground" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/divider" />
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/padding_medium"
+                    android:text="🎮 Hollow Knight"
+                    android:textSize="@dimen/text_size_title"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:background="?attr/selectableItemBackground" />
+
+            </LinearLayout>
 
         </androidx.cardview.widget.CardView>
 

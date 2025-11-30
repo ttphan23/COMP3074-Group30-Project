@@ -20,7 +20,7 @@
     <string name="email">Email</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="date_of_birth">Date of Birth</string>
-    
+
     <!-- New Strings -->
     <string name="trending_games">Trending Games</string>
     <string name="my_library">My Game Library</string>
@@ -35,4 +35,31 @@
     <string name="theme_light_mode">Light Mode</string>
     <string name="theme_dark_mode">Dark Mode</string>
     <string name="theme_accent_preview">Accent Preview</string>
+
+    <string-array name="status_options">
+        <item>Played</item>
+        <item>Playing</item>
+        <item>Backlog</item>
+    </string-array>
+
+    <string-array name="emoji_options">
+        <item>🎮</item>
+        <item>⚔️</item>
+        <item>🪓</item>
+        <item>🤠</item>
+        <item>🧙‍♂️</item>
+        <item>🐉</item>
+        <item>🤖</item>
+        <item>🦋</item>
+        <item>🎲</item>
+    </string-array>
+
+    <style name="SpinnerDarkStyle" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="android:popupBackground">@color/card_background</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    <style name="DarkSpinnerItem">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:background">@color/card_background</item>
+    </style>
 </resources>

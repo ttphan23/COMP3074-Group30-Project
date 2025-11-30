@@ -10,6 +10,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.gbc.comp3074.comp3074.model.Game;
+
 public class SessionManager {
     public static final String PREF_NAME = "vgj_session_prefs";
     public static final String KEY_THEME_MODE = "theme_mode";
@@ -22,7 +24,8 @@ public class SessionManager {
     private static final String KEY_REMEMBER_ME = "remember_me";
     private static final String KEY_FOLLOWING = "following_json";
     private static final String KEY_TRENDING_GAMES = "trending_games_json";
-
+    private static final String KEY_GAME_LIBRARY = "game_library";
+    private static final String KEY_BEST_GAME = "best_game_title";
     private final SharedPreferences prefs;
 
     public SessionManager(Context context) {
@@ -462,6 +465,55 @@ public class SessionManager {
         return allReviews;
     }
 
+    public void saveGameLibrary(List<Game> games) {
+        JSONArray array = new JSONArray();
+
+        for (Game g : games) {
+            try {
+                JSONObject obj = new JSONObject();
+                obj.put("title", g.getTitle());
+                obj.put("status", g.getStatus());
+                obj.put("emoji", g.getEmoji());
+                array.put(obj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        prefs.edit()
+                .putString("game_library", array.toString())
+                .apply();
+    }
+
+    public List<Game> getGameLibrary() {
+        List<Game> games = new ArrayList<>();
+        String json = prefs.getString("game_library", "[]");
+
+        try {
+            JSONArray array = new JSONArray(json);
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject obj = array.getJSONObject(i);
+
+                games.add(new Game(
+                        obj.getString("title"),
+                        obj.getString("status"),
+                        obj.getString("emoji")
+                ));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return games;
+    }
+
+    public void setBestGame(String title) {
+        prefs.edit().putString(KEY_BEST_GAME, title).apply();
+    }
+
+    public String getBestGame() {
+        return prefs.getString(KEY_BEST_GAME, "");
+    }
     // Initialize default following for demo
     public void initializeDefaultFollowing() {
         if (getFollowingList().isEmpty()) {

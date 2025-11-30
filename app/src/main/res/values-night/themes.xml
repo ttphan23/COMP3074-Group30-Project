@@ -11,5 +11,7 @@
         <item name="colorOnSurface">@color/colorOnSurface</item>
         <item name="android:statusBarColor">@color/arc_gradient_bottom</item>
         <item name="android:navigationBarColor">@color/deep_space_dark</item>
+        <item name="android:spinnerDropDownItemStyle">@style/DarkSpinnerItem</item>
+
     </style>
 </resources>

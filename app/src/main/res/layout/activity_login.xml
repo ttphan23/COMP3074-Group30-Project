@@ -1,161 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@color/background">
+    android:background="@drawable/bg_deep_space">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/padding_large">
+        android:layout_height="260dp"
+        android:background="@drawable/bg_gradient_arc_top" />
 
-        <!-- App Icon/Logo -->
-        <ImageView
-            android:id="@+id/ivLogo"
-            android:layout_width="@dimen/icon_size_large"
-            android:layout_height="@dimen/icon_size_large"
-            android:layout_marginTop="@dimen/margin_xlarge"
-            android:src="@drawable/ic_game_controller"
-            android:contentDescription="@string/app_name"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bg_gradient_arc_bottom" />
 
-        <!-- App Title -->
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="0dp"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:padding="24dp"
+        android:paddingTop="150dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:text="@string/video_game_journal"
-            android:textAlignment="center"
-            android:textColor="@color/primary"
-            android:textSize="@dimen/text_size_hero"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ivLogo" />
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
-        <!-- Subtitle -->
-        <TextView
-            android:id="@+id/tvSubtitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small"
-            android:text="Track, Review, Share Your Gaming Journey"
-            android:textAlignment="center"
-            android:textColor="@color/text_secondary"
-            android:textSize="@dimen/text_size_body"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textView" />
+            <TextView
+                android:id="@+id/tvHeroTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GAMEBOXD"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="34sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.2" />
 
-        <!-- Username Input -->
-        <EditText
-            android:id="@+id/etUsername"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/input_height"
-            android:layout_marginTop="@dimen/margin_xlarge"
-            android:autofillHints="username"
-            android:background="@drawable/edit_text_background"
-            android:hint="@string/username"
-            android:inputType="textPersonName"
-            android:textSize="@dimen/text_size_body"
-            android:textColor="@color/text_primary"
-            android:textColorHint="@color/text_hint"
-            android:drawableStart="@drawable/ic_person"
-            android:drawablePadding="@dimen/padding_small"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvSubtitle"
-            app:layout_constraintWidth_max="400dp" />
+            <TextView
+                android:id="@+id/tvHeroSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Log in to your adventure"
+                android:textColor="@color/text_secondary"
+                android:textSize="16sp" />
 
-        <!-- Password Input -->
-        <EditText
-            android:id="@+id/etPassword"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/input_height"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:autofillHints="password"
-            android:hint="@string/password"
-            android:inputType="textPassword"
-            android:textSize="@dimen/text_size_body"
-            android:textColor="@color/text_primary"
-            android:textColorHint="@color/text_hint"
-            android:background="@drawable/edit_text_background"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etUsername"
-            app:layout_constraintWidth_max="400dp" />
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                app:cardCornerRadius="32dp"
+                app:cardElevation="12dp"
+                app:strokeColor="@color/neon_blue"
+                app:strokeWidth="2dp"
+                app:cardBackgroundColor="@color/colorSurfaceCard">
 
-        <!-- Remember Me -->
-        <CheckBox
-            android:id="@+id/cbRemember"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small"
-            android:text="@string/remember_me"
-            android:textColor="@color/text_primary"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etPassword"
-            app:layout_constraintWidth_max="400dp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
 
-        <!-- Login Button -->
-        <Button
-            android:id="@+id/btnLogin"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/button_height"
-            android:layout_marginTop="@dimen/margin_large"
-            android:text="@string/login"
-            android:textSize="@dimen/text_size_title"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:backgroundTint="@color/button_primary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cbRemember"
-            app:layout_constraintWidth_max="400dp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Username"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="14sp" />
 
-        <!-- Register Button -->
-        <Button
-            android:id="@+id/btnRegister"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/button_height"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:text="@string/Register"
-            android:textSize="@dimen/text_size_title"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:backgroundTint="@color/button_secondary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnLogin"
-            app:layout_constraintWidth_max="400dp" />
+                    <EditText
+                        android:id="@+id/etUsername"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="8dp"
+                        android:hint="Enter your username"
+                        android:textColorHint="@color/text_secondary"
+                        android:textColor="?attr/colorOnSurface"
+                        android:padding="12dp"
+                        android:background="@drawable/bg_neon_input"
+                        android:inputType="text"
+                        android:drawableTint="@color/neon_cyan"
+                        android:textCursorDrawable="@null" />
 
-        <!-- Guest Login -->
-        <TextView
-            android:id="@+id/tvGuestLogin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:text="Continue as Guest"
-            android:textColor="@color/primary"
-            android:textSize="@dimen/text_size_body"
-            android:textStyle="bold"
-            android:paddingTop="@dimen/padding_small"
-            android:paddingBottom="@dimen/padding_small"
-            android:paddingStart="@dimen/padding_medium"
-            android:paddingEnd="@dimen/padding_medium"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackground"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnRegister" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Password"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="14sp" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <EditText
+                        android:id="@+id/etPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="8dp"
+                        android:hint="Enter your password"
+                        android:textColorHint="@color/text_secondary"
+                        android:textColor="?attr/colorOnSurface"
+                        android:padding="12dp"
+                        android:background="@drawable/bg_neon_input"
+                        android:inputType="textPassword"
+                        android:textCursorDrawable="@null" />
 
-</ScrollView>
+                    <Button
+                        android:id="@+id/btnLogin"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="24dp"
+                        android:text="LOGIN"
+                        android:textAllCaps="true"
+                        android:textColor="@color/colorOnPrimary"
+                        android:background="@drawable/bg_neon_button"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvCreateAccount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="16dp"
+                        android:text="Create an account"
+                        android:textColor="@color/neon_purple"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

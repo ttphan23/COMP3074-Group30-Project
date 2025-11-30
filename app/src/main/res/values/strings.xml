@@ -30,4 +30,9 @@
     <string name="write_review">Write a Review</string>
     <string name="my_reviews">My Recent Reviews</string>
     <string name="logout">Logout</string>
+    <string name="theme_mode_label">Theme Mode</string>
+    <string name="theme_system_default">System Default</string>
+    <string name="theme_light_mode">Light Mode</string>
+    <string name="theme_dark_mode">Dark Mode</string>
+    <string name="theme_accent_preview">Accent Preview</string>
 </resources>

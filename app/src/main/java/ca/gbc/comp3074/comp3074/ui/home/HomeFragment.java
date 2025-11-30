@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import ca.gbc.comp3074.comp3074.R;
@@ -22,13 +23,10 @@ import ca.gbc.comp3074.comp3074.model.Game;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.transition.MaterialSharedAxis;
 import java.util.ArrayList;
 import java.util.List;
-import ca.gbc.comp3074.comp3074.data.remote.ApiClient;
-import ca.gbc.comp3074.comp3074.data.remote.models.GameApiModel;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
 
@@ -37,6 +35,17 @@ public class HomeFragment extends Fragment {
     private List<Game> allGames;
     private String currentFilter = "all"; // "all", "played", "playing", "backlog"
     private SharedPreferences preferences;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        MaterialSharedAxis enter = new MaterialSharedAxis(MaterialSharedAxis.Z, true);
+        enter.setDuration(320);
+        setEnterTransition(enter);
+        MaterialSharedAxis returnAxis = new MaterialSharedAxis(MaterialSharedAxis.Z, false);
+        returnAxis.setDuration(320);
+        setReturnTransition(returnAxis);
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -60,10 +69,13 @@ public class HomeFragment extends Fragment {
             usernameText.setText("Guest");
         }
         
-        // Load and display profile emoji
+        // Load and display profile initial
         TextView tvProfileEmoji = root.findViewById(R.id.tvProfileEmoji);
-        String profileEmoji = preferences.getString("profileEmoji", "👤");
-        tvProfileEmoji.setText(profileEmoji);
+        if (username != null && !username.isEmpty() && !username.equals("Guest")) {
+            tvProfileEmoji.setText(username.substring(0, 1).toUpperCase());
+        } else {
+            tvProfileEmoji.setText("G");
+        }
 
         // Initialize game library
         initializeGames();
@@ -192,10 +204,10 @@ public class HomeFragment extends Fragment {
 
         // Update library title with count
         TextView libraryTitle = binding.getRoot().findViewById(R.id.tvLibraryTitle);
-        String filterText = currentFilter.equals("all") ? "My Game Library" : 
-                           currentFilter.equals("played") ? "Completed Games" :
-                           currentFilter.equals("playing") ? "Currently Playing" : "My Backlog";
-        libraryTitle.setText("📚 " + filterText + " (" + filteredGames.size() + ")");
+        String filterText = currentFilter.equals("all") ? "Game Library" :
+                           currentFilter.equals("played") ? "Completed" :
+                           currentFilter.equals("playing") ? "Currently Playing" : "Backlog";
+        libraryTitle.setText(filterText + " (" + filteredGames.size() + ")");
 
         if (filteredGames.isEmpty()) {
             TextView emptyText = new TextView(requireContext());
@@ -228,6 +240,11 @@ public class HomeFragment extends Fragment {
                     android.widget.Toast.LENGTH_SHORT).show();
             });
 
+            gameView.setOnLongClickListener(v -> {
+                Toast.makeText(requireContext(), game.getTitle() + " • " + game.getStatus(), Toast.LENGTH_SHORT).show();
+                return true;
+            });
+
             // Fade-in animation
             gameView.setAlpha(0f);
             gameView.animate()
@@ -253,94 +270,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadTrendingGames() {
-        if (binding == null) return;
-
-        final LinearLayout llTrendingGames = binding.getRoot().findViewById(R.id.llTrendingGames);
-        llTrendingGames.removeAllViews();
-
-        // 🔌 Remote call via Retrofit
-        ApiClient.getGameApiService()
-                .getTrendingGames()
-                .enqueue(new Callback<List<GameApiModel>>() {
-                    @Override
-                    public void onResponse(Call<List<GameApiModel>> call, Response<List<GameApiModel>> response) {
-                        if (!isAdded() || binding == null) return;
-
-                        List<GameApiModel> games = response.body();
-                        if (response.isSuccessful() && games != null && !games.isEmpty()) {
-                            populateTrendingFromApi(llTrendingGames, games);
-                        } else {
-                            // Fallback to local dummy data if API gives empty/bad response
-                            populateTrendingFromSessionManager(llTrendingGames);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<List<GameApiModel>> call, Throwable t) {
-                        if (!isAdded() || binding == null) return;
-                        // Network error → fallback to local dummy data
-                        populateTrendingFromSessionManager(llTrendingGames);
-                    }
-                });
-    }
-    private void populateTrendingFromApi(LinearLayout llTrendingGames, List<GameApiModel> games) {
-        llTrendingGames.removeAllViews();
-
-        int count = Math.min(4, games.size());
-        for (int i = 0; i < count; i++) {
-            GameApiModel game = games.get(i);
-
-            String title = game.getTitle() != null ? game.getTitle() : "Unknown Game";
-            String description = game.getDescription() != null ? game.getDescription() : "";
-            double rating = game.getRating(); // 0.0 if not set
-
-            // Create a card for each game
-            LinearLayout gameCard = new LinearLayout(requireContext());
-            gameCard.setOrientation(LinearLayout.VERTICAL);
-            gameCard.setPadding(0, dpToPx(8), 0, dpToPx(8));
-
-            // Title
-            TextView tvTitle = new TextView(requireContext());
-            tvTitle.setText("🎮 " + title);
-            tvTitle.setTextSize(18);
-            tvTitle.setTextColor(getResources().getColor(R.color.text_primary, null));
-            tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
-
-            // Description + rating (if any)
-            TextView tvDetails = new TextView(requireContext());
-            String detailsText;
-            if (rating > 0) {
-                String formattedRating = String.format("%.1f", rating);
-                detailsText = description + " • ⭐ " + formattedRating;
-            } else {
-                detailsText = description;
-            }
-            tvDetails.setText(detailsText);
-            tvDetails.setTextSize(14);
-            tvDetails.setTextColor(getResources().getColor(R.color.text_secondary, null));
-            tvDetails.setPadding(0, dpToPx(4), 0, 0);
-
-            gameCard.addView(tvTitle);
-            gameCard.addView(tvDetails);
-
-            // Divider between items (except last)
-            if (i < count - 1) {
-                View divider = new View(requireContext());
-                LinearLayout.LayoutParams dividerParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        dpToPx(1)
-                );
-                dividerParams.setMargins(0, dpToPx(8), 0, 0);
-                divider.setLayoutParams(dividerParams);
-                divider.setBackgroundColor(getResources().getColor(R.color.divider, null));
-                gameCard.addView(divider);
-            }
-
-            llTrendingGames.addView(gameCard);
-        }
-    }
-
-    private void populateTrendingFromSessionManager(LinearLayout llTrendingGames) {
+        LinearLayout llTrendingGames = binding.getRoot().findViewById(R.id.llTrendingGames);
         llTrendingGames.removeAllViews();
 
         JSONArray trendingGames = sessionManager.getTrendingGames();
@@ -352,28 +282,46 @@ public class HomeFragment extends Fragment {
                 String description = game.getString("description");
                 double rating = game.getDouble("rating");
 
-                // Create a card for each game
-                LinearLayout gameCard = new LinearLayout(requireContext());
-                gameCard.setOrientation(LinearLayout.VERTICAL);
-                gameCard.setPadding(0, dpToPx(8), 0, dpToPx(8));
+                // Create a row for each game
+                LinearLayout gameRow = new LinearLayout(requireContext());
+                gameRow.setOrientation(LinearLayout.HORIZONTAL);
+                gameRow.setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12));
+                gameRow.setGravity(Gravity.CENTER_VERTICAL);
+
+                // Game info column
+                LinearLayout infoColumn = new LinearLayout(requireContext());
+                infoColumn.setOrientation(LinearLayout.VERTICAL);
+                LinearLayout.LayoutParams infoParams = new LinearLayout.LayoutParams(
+                        0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                infoColumn.setLayoutParams(infoParams);
 
                 // Title
                 TextView tvTitle = new TextView(requireContext());
-                tvTitle.setText("🎮 " + title);
-                tvTitle.setTextSize(18);
+                tvTitle.setText(title);
+                tvTitle.setTextSize(15);
                 tvTitle.setTextColor(getResources().getColor(R.color.text_primary, null));
                 tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
 
-                // Description and rating
+                // Description
                 TextView tvDetails = new TextView(requireContext());
-                String formattedRating = String.format("%.1f", rating);
-                tvDetails.setText(description + " • ⭐ " + formattedRating);
-                tvDetails.setTextSize(14);
+                tvDetails.setText(description);
+                tvDetails.setTextSize(13);
                 tvDetails.setTextColor(getResources().getColor(R.color.text_secondary, null));
-                tvDetails.setPadding(0, dpToPx(4), 0, 0);
 
-                gameCard.addView(tvTitle);
-                gameCard.addView(tvDetails);
+                infoColumn.addView(tvTitle);
+                infoColumn.addView(tvDetails);
+
+                // Rating badge
+                TextView tvRating = new TextView(requireContext());
+                tvRating.setText(String.format("%.1f", rating));
+                tvRating.setTextSize(14);
+                tvRating.setTextColor(getResources().getColor(R.color.rating_star, null));
+                tvRating.setTypeface(null, android.graphics.Typeface.BOLD);
+
+                gameRow.addView(infoColumn);
+                gameRow.addView(tvRating);
+
+                llTrendingGames.addView(gameRow);
 
                 // Add divider except for last item
                 if (i < Math.min(4, trendingGames.length()) - 1) {
@@ -382,23 +330,21 @@ public class HomeFragment extends Fragment {
                             LinearLayout.LayoutParams.MATCH_PARENT,
                             dpToPx(1)
                     );
-                    dividerParams.setMargins(0, dpToPx(8), 0, 0);
+                    dividerParams.setMargins(dpToPx(12), 0, dpToPx(12), 0);
                     divider.setLayoutParams(dividerParams);
                     divider.setBackgroundColor(getResources().getColor(R.color.divider, null));
-                    gameCard.addView(divider);
+                    llTrendingGames.addView(divider);
                 }
-
-                llTrendingGames.addView(gameCard);
             }
         } catch (JSONException e) {
             e.printStackTrace();
             TextView errorText = new TextView(requireContext());
             errorText.setText("Unable to load trending games");
             errorText.setTextColor(getResources().getColor(R.color.text_secondary, null));
+            errorText.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
             llTrendingGames.addView(errorText);
         }
     }
-
 
     private int dpToPx(int dp) {
         float density = getResources().getDisplayMetrics().density;
@@ -408,11 +354,15 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Refresh profile emoji when returning from settings
-        if (binding != null && preferences != null) {
+        // Refresh profile when returning from settings
+        if (binding != null) {
+            String username = sessionManager.getUsername();
             TextView tvProfileEmoji = binding.getRoot().findViewById(R.id.tvProfileEmoji);
-            String profileEmoji = preferences.getString("profileEmoji", "👤");
-            tvProfileEmoji.setText(profileEmoji);
+            if (username != null && !username.isEmpty() && !username.equals("Guest")) {
+                tvProfileEmoji.setText(username.substring(0, 1).toUpperCase());
+            } else {
+                tvProfileEmoji.setText("G");
+            }
         }
     }
 
